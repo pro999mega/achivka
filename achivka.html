@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050608" />
+<title>ACHIEVEMENT TERMINAL</title>
+<style>
+:root{
+  --bg:#050608; --cyan:#2ee6ff; --red:#ff3b30; --green:#37f5a0;
+  --txt:#dfeef8; --mute:#7f97a6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;min-height:100%;}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:ui-monospace,"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  font-variant-numeric:tabular-nums;
+  padding:16px 14px calc(98px + env(safe-area-inset-bottom));
+  background-image:radial-gradient(120% 70% at 50% -10%, rgba(46,230,255,.10), transparent 62%);
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px);
+  opacity:.35;
+}
+.hdr{padding:2px 2px 0;}
+.hdr-row{display:flex;align-items:center;gap:12px;}
+.hl{font-size:15px;font-weight:700;letter-spacing:.03em;color:var(--cyan);line-height:1.3;word-break:break-word;}
+.hl .num{color:var(--red);}
+.hs{font-size:11px;color:var(--mute);margin-top:7px;letter-spacing:.02em;}
+.avatar{
+  margin-left:auto;flex:0 0 auto;width:64px;height:64px;border-radius:17px;
+  border:1px solid rgba(46,230,255,.35);
+  background:linear-gradient(160deg,rgba(46,230,255,.14),rgba(6,10,13,.92));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  box-shadow:0 0 26px rgba(46,230,255,.10), inset 0 0 18px rgba(46,230,255,.07);
+}
+.avatar b{font-size:23px;color:#fff;line-height:1;}
+.avatar small{font-size:8px;color:var(--mute);letter-spacing:.18em;}
+.hr-rule{height:1px;background:linear-gradient(90deg,var(--cyan),rgba(46,230,255,.04));margin:14px 0 10px;}
+.htags{font-size:9px;letter-spacing:.16em;color:rgba(127,151,166,.9);}
+.screen{display:none;padding-top:16px;}
+.screen.on{display:block;}
+.sec-title{font-size:11px;letter-spacing:.16em;color:var(--cyan);margin:0 0 12px 2px;}
+.panel{
+  position:relative;border:1px solid rgba(46,230,255,.16);border-radius:20px;padding:18px 16px;
+  background:linear-gradient(180deg,rgba(11,18,23,.92),rgba(5,8,10,.92));
+}
+.corners::before,.corners::after{
+  content:"";position:absolute;width:18px;height:18px;border:1px solid rgba(46,230,255,.5);pointer-events:none;
+}
+.corners::before{top:-1px;left:-1px;border-right:0;border-bottom:0;border-radius:8px 0 0 0;}
+.corners::after{bottom:-1px;right:-1px;border-left:0;border-top:0;border-radius:0 0 8px 0;}
+.lvl-head{display:flex;align-items:center;gap:13px;margin-bottom:16px;}
+.badge-main{flex:0 0 84px;width:84px;height:84px;filter:drop-shadow(0 0 12px rgba(46,230,255,.28));}
+.lvl-info{flex:1;min-width:0;}
+.lvl-name{font-size:8.5px;letter-spacing:.16em;color:var(--mute);}
+.lvl-big{font-size:24px;color:#fff;letter-spacing:.04em;margin-top:4px;line-height:1.1;}
+.lvl-title{font-size:15px;color:var(--cyan);margin-top:3px;letter-spacing:.02em;word-break:break-word;}
+.lvl-rank{font-size:8px;letter-spacing:.14em;color:rgba(127,151,166,.95);margin-top:5px;line-height:1.5;}
+.reward{text-align:right;flex:0 0 auto;}
+.reward b{display:block;font-size:19px;color:var(--green);white-space:nowrap;}
+.reward small{font-size:8px;letter-spacing:.16em;color:var(--mute);}
+.prog-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.14em;color:var(--mute);margin-bottom:8px;}
+.bar{height:12px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(46,230,255,.14);overflow:hidden;}
+.fill{
+  height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,#0f7f96,var(--cyan) 62%,#c8fbff);
+  box-shadow:0 0 14px rgba(46,230,255,.55);
+  transition:width .42s cubic-bezier(.2,.9,.2,1);
+}
+.next{font-size:9px;letter-spacing:.08em;color:rgba(127,151,166,.85);margin-top:10px;}
+.act{
+  margin-top:18px;width:100%;border-radius:22px;border:1px solid rgba(46,230,255,.45);
+  padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  background:linear-gradient(180deg,rgba(46,230,255,.16),rgba(46,230,255,.04));
+  color:#fff;font-family:inherit;cursor:pointer;user-select:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35), 0 10px 30px rgba(46,230,255,.10);
+  transition:transform .09s ease, box-shadow .2s ease, background .25s ease, border-color .25s ease;
+  animation:breathe 3.6s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,.35), 0 0 10px rgba(46,230,255,.10);}
+  50%{box-shadow:inset 0 0 0 1px rgba(0,0,0,.35), 0 0 26px rgba(46,230,255,.32);}
+}
+.act:active{transform:scale(.985);}
+.act-main{font-size:19px;letter-spacing:.22em;font-weight:700;color:#eafcff;}
+.act-sub{font-size:10px;letter-spacing:.1em;color:var(--mute);}
+.act.paid{
+  animation:none;border-color:rgba(55,245,160,.6);
+  background:linear-gradient(180deg,rgba(55,245,160,.24),rgba(55,245,160,.05));
+  box-shadow:0 0 30px rgba(55,245,160,.32);
+}
+.act.paid .act-main{color:var(--green);letter-spacing:.1em;}
+.act.paid .act-sub{color:rgba(55,245,160,.8);}
+.stats{display:flex;gap:10px;margin-top:14px;}
+.stat{flex:1;border:1px solid rgba(46,230,255,.13);border-radius:16px;padding:12px 12px 11px;background:rgba(9,14,18,.8);}
+.stat .k{display:block;font-size:8.5px;letter-spacing:.13em;color:var(--mute);}
+.stat .v{display:block;font-size:17px;color:#fff;margin-top:6px;}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tbl-wrap{margin-top:16px;border:1px solid rgba(46,230,255,.13);border-radius:16px;overflow:hidden;background:rgba(9,14,18,.78);}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th,td{padding:11px 10px;text-align:left;vertical-align:top;border-bottom:1px solid rgba(255,255,255,.06);word-break:break-word;}
+th{font-size:8.5px;letter-spacing:.13em;color:var(--mute);font-weight:400;background:rgba(46,230,255,.05);}
+tr:last-child td{border-bottom:0;}
+td.sum{color:var(--green);white-space:nowrap;}
+td.st{color:var(--mute);}
+td.st.paid{color:rgba(55,245,160,.7);}
+td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1em;}
+.clear{
+  margin-top:16px;width:100%;border-radius:18px;padding:17px;cursor:pointer;
+  border:1px solid rgba(255,59,48,.5);
+  background:linear-gradient(180deg,rgba(255,59,48,.16),rgba(255,59,48,.04));
+  color:#ffd9d6;font-family:inherit;font-size:12px;letter-spacing:.1em;
+  transition:background .2s ease, border-color .2s ease;
+}
+.clear.armed{
+  border-color:#ff3b30;color:#fff;
+  background:linear-gradient(180deg,rgba(255,59,48,.34),rgba(255,59,48,.1));
+  box-shadow:0 0 24px rgba(255,59,48,.35);
+}
+.clear:disabled{opacity:.45;border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--mute);box-shadow:none;}
+.reset{
+  margin-top:10px;width:100%;border-radius:18px;padding:15px;cursor:pointer;
+  border:1px dashed rgba(255,59,48,.45);background:rgba(255,59,48,.05);
+  color:rgba(255,180,175,.9);font-family:inherit;font-size:11px;letter-spacing:.13em;
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.reset.armed{
+  border-style:solid;border-color:#ff3b30;color:#fff;
+  background:linear-gradient(180deg,rgba(255,59,48,.4),rgba(255,59,48,.12));
+  box-shadow:0 0 26px rgba(255,59,48,.4);
+}
+.rank-strip{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;border:1px solid rgba(46,230,255,.16);background:rgba(9,14,18,.8);}
+.rank-strip .bg{width:46px;height:46px;flex:0 0 46px;}
+.rank-strip b{display:block;font-size:12px;color:#fff;letter-spacing:.1em;}
+.rank-strip small{display:block;font-size:8.5px;color:var(--mute);letter-spacing:.12em;margin-top:5px;}
+.lvlist{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+.lvrow{
+  display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:14px;
+  border:1px solid rgba(46,230,255,.10);background:rgba(9,14,18,.7);opacity:.55;
+  transition:opacity .2s ease, border-color .2s ease;
+}
+.lvrow.done{opacity:1;border-color:rgba(55,245,160,.22);background:rgba(8,18,15,.72);}
+.lvrow.now{opacity:1;border-color:rgba(46,230,255,.6);background:rgba(9,20,26,.92);box-shadow:0 0 18px rgba(46,230,255,.16);}
+.lvrow .bg{width:42px;height:42px;flex:0 0 42px;}
+.lvrow .nm{flex:1;min-width:0;}
+.lvrow .nm b{display:block;font-size:12px;color:#fff;letter-spacing:.02em;word-break:break-word;}
+.lvrow .nm small{display:block;font-size:8.5px;color:var(--mute);letter-spacing:.12em;margin-top:3px;}
+.lvrow .rw{font-size:11.5px;color:var(--green);white-space:nowrap;}
+.lvrow.done .rw{color:rgba(55,245,160,.65);}
+.lvrow .stt{font-size:9px;letter-spacing:.1em;color:var(--mute);white-space:nowrap;}
+.bsvg.r10{animation:rainbow 5s linear infinite;}
+@keyframes rainbow{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+.toast{
+  position:fixed;top:14px;left:50%;z-index:30;transform:translate(-50%,-12px);opacity:0;pointer-events:none;
+  padding:10px 16px;border-radius:12px;font-size:11px;letter-spacing:.12em;
+  border:1px solid rgba(46,230,255,.5);background:#071016;color:var(--cyan);
+  box-shadow:0 8px 28px rgba(0,0,0,.6);transition:opacity .22s ease, transform .22s ease;
+}
+.toast.on{opacity:1;transform:translate(-50%,0);}
+.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:7px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(5,6,8,0),rgba(5,6,8,.97) 42%);
+}
+.tab{
+  flex:1;padding:13px 6px;border-radius:15px;cursor:pointer;
+  border:1px solid rgba(46,230,255,.16);background:rgba(8,12,16,.9);
+  color:var(--mute);font-family:inherit;font-size:10px;letter-spacing:.1em;
+  transition:color .2s ease, background .2s ease;
+}
+.tab.on{
+  color:#04121a;font-weight:700;border-color:transparent;
+  background:linear-gradient(180deg,#7df3ff,var(--cyan));
+  box-shadow:0 0 22px rgba(46,230,255,.32);
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hl"><span class="num">01//</span> ACHIEVEMENT TERMINAL</div>
+      <div class="hs">ачивка · прокачка нажатиями</div>
+    </div>
+    <div class="avatar"><b id="avLvl">01</b><small>LVL</small></div>
+  </div>
+  <div class="hr-rule"></div>
+  <div class="htags">CLICK PROTOCOL // 100 LEVELS // REWARD &#8381;</div>
+</header>
+
+<section class="screen on" id="scrMain">
+  <div class="panel corners">
+    <div class="lvl-head">
+      <div class="badge-main" id="badgeMain"></div>
+      <div class="lvl-info">
+        <div class="lvl-name">ТЕКУЩИЙ УРОВЕНЬ</div>
+        <div class="lvl-big" id="lvlBig">УР. 01</div>
+        <div class="lvl-title" id="titleMain">Новичок</div>
+        <div class="lvl-rank" id="rankMain">РАНГ: РЖАВЬ</div>
+      </div>
+      <div class="reward">
+        <b id="rewVal">+1 &#8381;</b>
+        <small>НАГРАДА</small>
+      </div>
+    </div>
+    <div class="prog-top"><span id="pText">0 / 1</span><span id="pPct">0%</span></div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <button class="act" id="btn">
+      <span class="act-main">НАЖАТЬ</span>
+      <span class="act-sub">нажми, когда сделал задание</span>
+    </button>
+    <div class="next" id="nextLine"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="k">К ВЫВОДУ</span><span class="v" id="pend">0 &#8381;</span></div>
+    <div class="stat"><span class="k">ВСЕГО НАЧИСЛЕНО</span><span class="v" id="tot">0 &#8381;</span></div>
+  </div>
+</section>
+
+<section class="screen" id="scrStats">
+  <div class="sec-title">02// СВОДКА И ВЫПЛАТЫ</div>
+  <div class="grid4">
+    <div class="stat"><span class="k">К ВЫВОДУ</span><span class="v" id="cPend">0 &#8381;</span></div>
+    <div class="stat"><span class="k">СЕГОДНЯ</span><span class="v" id="cToday">0 &#8381;</span></div>
+    <div class="stat"><span class="k">ВСЕГО</span><span class="v" id="cTot">0 &#8381;</span></div>
+    <div class="stat"><span class="k">ВЫПЛАЧЕНО</span><span class="v" id="cPaid">0 &#8381;</span></div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>УРОВЕНЬ</th><th>СУММА</th><th>ДАТА</th></tr></thead>
+      <tbody id="tBody"></tbody>
+    </table>
+  </div>
+  <button class="clear" id="btnClear">ЗАБРАЛ · ОЧИСТИТЬ</button>
+  <button class="reset" id="btnReset">ПОЛНЫЙ СБРОС · ДО УРОВНЯ 1</button>
+</section>
+
+<section class="screen" id="scrLevels">
+  <div class="sec-title">03// ВСЕ 100 УРОВНЕЙ</div>
+  <div class="rank-strip">
+    <div class="bg" id="rankBadge"></div>
+    <div>
+      <b id="rankName">РАНГ: РЖАВЬ</b>
+      <small id="rankRange">УРОВНИ 01–10</small>
+    </div>
+  </div>
+  <div class="lvlist" id="lvList"></div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabs">
+  <button class="tab on" data-scr="main">ТЕРМИНАЛ</button>
+  <button class="tab" data-scr="stats">СВОДКА</button>
+  <button class="tab" data-scr="levels">УРОВНИ</button>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "achivka_v1";
+  var MAX = 100;
+
+  var TITLES = [
+    "Новичок","Ученик","Пробник","Старатель","Любитель","Практик","Трудяга","Упорный","Юниор","Рядовой",
+    "Стажёр","Подмастерье","Смекалистый","Ловкач","Сноровистый","Умелец","Знаток","Мастеровой","Дока","Спец",
+    "Профи","Ас","Виртуоз","Маэстро","Эксперт","Гуру","Специалист","Инженер","Стратег","Аналитик",
+    "Офицер","Лейтенант","Капитан","Майор","Полковник","Генерал","Маршал","Командор","Легионер","Центурион",
+    "Гладиатор","Чемпион","Рекордсмен","Лидер","Вожак","Авторитет","Магнат","Барон","Граф","Герцог",
+    "Рыцарь","Паладин","Хранитель","Страж","Защитник","Ветеран","Элита","Гвардеец","Охотник","Следопыт",
+    "Мастер","Механик","Алхимик","Чародей","Заклинатель","Волшебник","Оракул","Архимаг","Мистик","Просветлённый",
+    "Титан","Гигант","Исполин","Колосс","Атлант","Громовержец","Небожитель","Звездочёт","Космонавт","Пилот",
+    "Сингулярность","Квант","Ядро","Реактор","Двигатель","Турбина","Ускоритель","Форсаж","Импульс","Вектор",
+    "Легенда","Миф","Эпос","Абсолют","Вершина","Олимп","Венец","Полубог","Архитектор","Бессмертный"
+  ];
+
+  var RANKS = [
+    {n:"РЖАВЬ",   d:"ржавая жестянка",     c1:"#9aa3aa", c2:"#333b40"},
+    {n:"БРОНЗА",  d:"бронзовый жетон",     c1:"#e09a55", c2:"#65370f"},
+    {n:"СЕРЕБРО", d:"серебряный медальон", c1:"#eaf2fa", c2:"#6d7885"},
+    {n:"ЗОЛОТО",  d:"золотая звезда",      c1:"#ffd766", c2:"#9a6b00"},
+    {n:"ПЛАТИНА", d:"платиновый щит",      c1:"#dcf9ff", c2:"#5f8f9e"},
+    {n:"ИЗУМРУД", d:"изумрудный кристалл", c1:"#5cf7ae", c2:"#075c3b"},
+    {n:"САПФИР",  d:"сапфировый клинок",   c1:"#63bbff", c2:"#0c3068"},
+    {n:"РУБИН",   d:"рубиновый ореол",     c1:"#ff6a7b", c2:"#6f0718"},
+    {n:"АМЕТИСТ", d:"аметистовая корона",  c1:"#c68dff", c2:"#3a1063"},
+    {n:"ЛЕГЕНДА", d:"легендарный трофей",  c1:"#7df3ff", c2:"#ff5ad0"}
+  ];
+
+  function rankOf(lv){ return Math.max(1, Math.min(10, Math.ceil(lv / 10))); }
+  function titleOf(lv){ return TITLES[Math.max(0, Math.min(MAX - 1, lv - 1))] || "?"; }
+
+  var S = load();
+  var lock = false, clearArmed = false, resetArmed = false;
+  var armTimer = null, resetTimer = null, flashTimer = null, uidc = 0, listSig = -1;
+
+  function fresh(){ return { level:1, presses:0, entries:[], totalEarned:0, withdrawn:0 }; }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(!raw) return fresh();
+      var p = JSON.parse(raw) || {};
+      return {
+        level: Math.max(1, Math.min(MAX, parseInt(p.level, 10) || 1)),
+        presses: Math.max(0, parseInt(p.presses, 10) || 0),
+        entries: Array.isArray(p.entries) ? p.entries.filter(function(e){ return e && e.lv && e.sum; }) : [],
+        totalEarned: Number(p.totalEarned) || 0,
+        withdrawn: Number(p.withdrawn) || 0
+      };
+    }catch(e){ return fresh(); }
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+  function el(id){ return document.getElementById(id); }
+  function pad(n){ n = String(n); return n.length < 2 ? "0" + n : n; }
+  function money(n){ return Number(n).toLocaleString("ru-RU") + " \u20BD"; }
+  function pending(){ return S.entries.reduce(function(a, e){ return a + (e.paid ? 0 : e.sum); }, 0); }
+  function todaySum(){
+    var d = new Date();
+    var start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    return S.entries.reduce(function(a, e){ return a + ((e.t || 0) >= start ? e.sum : 0); }, 0);
+  }
+  function when(t){
+    if(!t) return "\u2014";
+    var d = new Date(t);
+    return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function buzz(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+  function flash(txt){
+    var t = el("toast");
+    t.textContent = txt;
+    t.classList.add("on");
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function(){ t.classList.remove("on"); }, 1900);
+  }
+
+  function badgeSVG(lv){
+    var id = "bg" + (++uidc);
+    var r = rankOf(lv), R = RANKS[r - 1];
+    var teeth = "", n = 6 + (r - 1) * 2, i, a, x1, y1, x2, y2;
+    for(i = 0; i < n; i++){
+      a = Math.PI * 2 / n * i - Math.PI / 2;
+      x1 = 50 + Math.cos(a) * 39; y1 = 50 + Math.sin(a) * 39;
+      x2 = 50 + Math.cos(a) * 46; y2 = 50 + Math.sin(a) * 46;
+      teeth += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="url(#' + id + ')" stroke-width="1.6" stroke-linecap="round"/>';
+    }
+    var diamond = r >= 4
+      ? '<path d="M50 19 L65 50 L50 81 L35 50 Z" fill="url(#' + id + ')" opacity=".15" stroke="url(#' + id + ')" stroke-width=".8"/>'
+      : "";
+    var scratch = r === 1
+      ? '<line x1="33" y1="61" x2="41" y2="73" stroke="rgba(255,255,255,.16)" stroke-width="1"/><line x1="59" y1="29" x2="66" y2="41" stroke="rgba(255,255,255,.13)" stroke-width="1"/>'
+      : "";
+    var fs = lv >= 100 ? 19 : (lv >= 10 ? 22 : 25);
+    return '<svg viewBox="0 0 100 100" width="100%" height="100%" class="bsvg r' + r + '">' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="' + R.c1 + '"/><stop offset="1" stop-color="' + R.c2 + '"/>' +
+      '</linearGradient></defs>' +
+      '<circle cx="50" cy="50" r="47" fill="none" stroke="url(#' + id + ')" stroke-width="1" opacity=".4"/>' +
+      '<circle cx="50" cy="50" r="34" fill="rgba(4,7,9,.86)" stroke="url(#' + id + ')" stroke-width="2"/>' +
+      diamond + teeth + scratch +
+      '<text x="50" y="' + (lv >= 100 ? 50 : 49) + '" text-anchor="middle" font-family="monospace" font-size="' + fs + '" font-weight="700" fill="url(#' + id + ')">' + lv + '</text>' +
+      '<text x="50" y="66" text-anchor="middle" font-family="monospace" font-size="7" letter-spacing="1.2" fill="' + R.c1 + '" opacity=".75">LVL</text>' +
+      '</svg>';
+  }
+
+  function render(){
+    var lv = S.level, need = lv, p = Math.min(S.presses, need);
+    var pct = Math.round(p / need * 100);
+    var rank = rankOf(lv), R = RANKS[rank - 1];
+
+    el("avLvl").textContent = pad(lv);
+    el("lvlBig").textContent = "УР. " + pad(lv);
+    el("titleMain").textContent = titleOf(lv);
+    el("rankMain").textContent = "РАНГ: " + R.n + " · " + R.d;
+    el("badgeMain").innerHTML = badgeSVG(lv);
+    el("rewVal").textContent = "+" + lv + " \u20BD";
+    el("pText").textContent = p + " / " + need;
+    el("pPct").textContent = pct + "%";
+    el("fill").style.width = pct + "%";
+    el("pend").textContent = money(pending());
+    el("tot").textContent = money(S.totalEarned);
+
+    el("nextLine").textContent = lv < MAX
+      ? "следующий: УР. " + pad(lv + 1) + " · " + titleOf(lv + 1) + " (+" + (lv + 1) + " \u20BD)"
+      : "максимум достигнут · фармим 100 \u20BD";
+
+    el("cPend").textContent = money(pending());
+    el("cToday").textContent = money(todaySum());
+    el("cTot").textContent = money(S.totalEarned);
+    el("cPaid").textContent = money(S.withdrawn);
+
+    var tb = el("tBody"), rows = S.entries.slice().reverse();
+    if(!rows.length){
+      tb.innerHTML = '<tr><td colspan="3" class="empty">пока нет начислений</td></tr>';
+    }else{
+      tb.innerHTML = rows.map(function(e){
+        return '<tr><td>УР. ' + pad(e.lv) + '</td>' +
+               '<td class="sum">+' + e.sum + ' \u20BD</td>' +
+               '<td class="st' + (e.paid ? ' paid' : '') + '">' + when(e.t) +
+               (e.paid ? ' · выплачено' : '') + '</td></tr>';
+      }).join("");
+    }
+
+    var b = el("btnClear");
+    if(!clearArmed){
+      var pd = pending();
+      b.classList.remove("armed");
+      b.disabled = pd <= 0;
+      b.textContent = pd > 0 ? "ЗАБРАЛ · ОЧИСТИТЬ · " + money(pd) : "ЗАБРАЛ · ОЧИСТИТЬ";
+    }
+
+    if(!resetArmed){
+      var rb = el("btnReset");
+      rb.classList.remove("armed");
+      rb.textContent = "ПОЛНЫЙ СБРОС · ДО УРОВНЯ 1";
+    }
+
+    el("rankBadge").innerHTML = badgeSVG(rank * 10);
+    el("rankName").textContent = "РАНГ: " + R.n;
+    el("rankRange").textContent = "УРОВНИ " + pad((rank - 1) * 10 + 1) + "–" + pad(rank * 10) + " · ЗНАЧОК: " + R.d.toUpperCase();
+
+    renderList();
+  }
+
+  function renderList(){
+    var box = el("lvList");
+    if(listSig === S.level) return;
+    var html = "", i, cls, mark;
+    for(i = 1; i <= MAX; i++){
+      cls = i < S.level ? " done" : (i === S.level ? " now" : "");
+      mark = i < S.level ? "✓ ПРОЙДЕН" : (i === S.level ? "▶ СЕЙЧАС" : "ЗАКРЫТ");
+      html += '<div class="lvrow' + cls + '" data-lv="' + i + '">' +
+        '<div class="bg">' + badgeSVG(i) + '</div>' +
+        '<div class="nm"><b>' + titleOf(i) + '</b><small>УР. ' + pad(i) + ' · ' + RANKS[rankOf(i) - 1].n + '</small></div>' +
+        '<div class="rw">+' + i + ' \u20BD</div>' +
+        '<div class="stt">' + mark + '</div></div>';
+    }
+    box.innerHTML = html;
+    listSig = S.level;
+  }
+
+  function press(){
+    if(lock) return;
+    lock = true;
+    buzz(10);
+    S.presses++;
+
+    if(S.presses >= S.level){
+      var lv = S.level;
+      el("fill").style.width = "100%";
+      el("pText").textContent = lv + " / " + lv;
+      el("pPct").textContent = "100%";
+
+      S.entries.push({ lv: lv, sum: lv, t: Date.now(), paid: false });
+      S.totalEarned = (Number(S.totalEarned) || 0) + lv;
+      S.level = Math.min(MAX, lv + 1);
+      S.presses = 0;
+      save();
+
+      el("pend").textContent = money(pending());
+      el("tot").textContent = money(S.totalEarned);
+      el("avLvl").textContent = pad(S.level);
+      el("lvlBig").textContent = "УР. " + pad(S.level);
+      el("titleMain").textContent = titleOf(S.level);
+      el("rankMain").textContent = "РАНГ: " + RANKS[rankOf(S.level) - 1].n + " · " + RANKS[rankOf(S.level) - 1].d;
+      el("rewVal").textContent = "+" + S.level + " \u20BD";
+
+      var btn = el("btn");
+      btn.classList.add("paid");
+      btn.querySelector(".act-main").textContent = "+" + lv + " \u20BD";
+      btn.querySelector(".act-sub").textContent = "уровень " + pad(lv) + " · " + titleOf(lv);
+
+      buzz([20, 50, 20, 50, 30]);
+
+      setTimeout(function(){
+        btn.classList.remove("paid");
+        btn.querySelector(".act-main").textContent = "НАЖАТЬ";
+        btn.querySelector(".act-sub").textContent = "нажми, когда сделал задание";
+        render();
+        lock = false;
+        flash("+" + money(lv) + " · уровень " + pad(lv));
+      }, 1000);
+    }else{
+      save();
+      render();
+      setTimeout(function(){ lock = false; }, 160);
+    }
+  }
+
+  function armClear(){
+    if(pending() <= 0) return;
+    if(clearArmed){ doClear(); return; }
+    clearArmed = true;
+    var b = el("btnClear");
+    b.classList.add("armed");
+    b.textContent = "ПОДТВЕРДИ: " + money(pending());
+    buzz(12);
+    clearTimeout(armTimer);
+    armTimer = setTimeout(function(){ clearArmed = false; render(); }, 4500);
+  }
+  function doClear(){
+    var s = pending();
+    if(s <= 0) return;
+    S.entries.forEach(function(e){ if(!e.paid) e.paid = true; });
+    S.withdrawn = (Number(S.withdrawn) || 0) + s;
+    clearArmed = false;
+    clearTimeout(armTimer);
+    save();
+    render();
+    buzz([18, 40, 18]);
+    flash("ОЧИЩЕНО · " + money(s));
+  }
+
+  function armReset(){
+    if(resetArmed){ doReset(); return; }
+    resetArmed = true;
+    var b = el("btnReset");
+    b.classList.add("armed");
+    b.textContent = "ТОЧНО? СБРОСИТЬ ВСЁ ДО УР. 1";
+    buzz([14, 30, 14]);
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function(){ resetArmed = false; render(); }, 4500);
+  }
+  function doReset(){
+    S = fresh();
+    clearArmed = false; resetArmed = false;
+    clearTimeout(resetTimer);
+    save();
+    render();
+    buzz([30, 60, 30, 60, 40]);
+    flash("ПОЛНЫЙ СБРОС · УР. 1");
+  }
+
+  el("btn").addEventListener("click", press);
+  el("btnClear").addEventListener("click", armClear);
+  el("btnReset").addEventListener("click", armReset);
+
+  var tabs = document.querySelectorAll(".tab");
+  var screens = { main:"scrMain", stats:"scrStats", levels:"scrLevels" };
+  for(var i = 0; i < tabs.length; i++){
+    tabs[i].addEventListener("click", function(){
+      var k;
+      for(k = 0; k < tabs.length; k++) tabs[k].classList.remove("on");
+      this.classList.add("on");
+      var key = this.getAttribute("data-scr");
+      el("scrMain").classList.remove("on");
+      el("scrStats").classList.remove("on");
+      el("scrLevels").classList.remove("on");
+      el(screens[key]).classList.add("on");
+      render();
+      if(key === "levels"){
+        setTimeout(function(){
+          var now = document.querySelector(".lvrow.now");
+          if(now && now.scrollIntoView) now.scrollIntoView({ block:"center", behavior:"smooth" });
+        }, 120);
+      }
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
