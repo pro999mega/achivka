@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050608">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>АЧИВКА · ТЕРМИНАЛ</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  background:#050608;color:#e7f6ff;
+  font-family:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+  padding:0 0 84px;overflow-x:hidden;
+  background-image:radial-gradient(120% 80% at 85% -10%,rgba(46,230,255,.10),transparent 60%),
+                   radial-gradient(90% 60% at 0% 110%,rgba(255,59,48,.08),transparent 60%);
+}
+.app{max-width:520px;margin:0 auto;padding:16px 14px 0}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.brand{font-size:9.5px;letter-spacing:.16em;color:#2ee6ff}
+.mini{font-size:9px;color:#6d7c88;letter-spacing:.12em;text-align:right}
+h1{font-size:19px;margin:0 0 7px;letter-spacing:.06em;font-weight:800}
+h1 .d{color:#ff3b30}
+.tags{font-size:8.5px;color:#6d7c88;letter-spacing:.07em;border-top:1px solid rgba(46,230,255,.16);padding-top:8px;margin-bottom:14px}
+.scr{display:none}
+.scr.active{display:block;animation:fd .18s ease}
+@keyframes fd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{position:relative;background:linear-gradient(155deg,rgba(12,18,24,.96),rgba(6,9,12,.96));
+  border:1px solid rgba(46,230,255,.18);border-radius:18px;padding:15px}
+.card::before,.card::after{content:'';position:absolute;width:14px;height:14px;border:1.5px solid #2ee6ff;opacity:.5}
+.card::before{top:-1px;left:-1px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.card::after{bottom:-1px;right:-1px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.row{display:flex;align-items:center;gap:11px}
+.lvlbox{border:1px solid rgba(255,59,48,.42);border-radius:10px;padding:5px 8px;text-align:center;min-width:58px}
+.lvlbox .k{font-size:7.5px;color:#ff3b30;letter-spacing:.16em}
+.lvlbox .v{font-size:21px;font-weight:800;line-height:1.05}
+.hold{flex:1;min-width:0}
+.tname{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank{font-size:8.5px;color:#6d7c88;letter-spacing:.13em;margin-top:3px}
+.nom{font-size:10px;color:#2ee6ff;margin-top:4px}
+.bwrap{flex:0 0 auto;display:flex;align-items:center}
+.bar{height:11px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:13px;position:relative}
+.bar i{display:block;height:100%;width:0;border-radius:8px;
+  background:linear-gradient(90deg,#2ee6ff,#37e08a);transition:width .32s ease;box-shadow:0 0 16px rgba(46,230,255,.5)}
+.bar.en{height:7px;margin-top:11px}
+.bar.en i{background:linear-gradient(90deg,#8b6bff,#2ee6ff);box-shadow:none}
+.binfo{display:flex;justify-content:space-between;font-size:9.5px;color:#6d7c88;margin-top:5px;gap:8px}
+.press{margin-top:13px;width:100%;border:0;border-radius:16px;padding:17px;font-family:inherit;
+  font-size:15px;font-weight:800;letter-spacing:.14em;color:#04181d;
+  background:linear-gradient(135deg,#2ee6ff,#8ff6ff);box-shadow:0 8px 30px rgba(46,230,255,.26);
+  transition:transform .06s,filter .2s}
+.press:active{transform:scale(.975);filter:brightness(1.1)}
+.press.ok{background:linear-gradient(135deg,#37e08a,#9dffcf);box-shadow:0 8px 30px rgba(55,224,138,.3)}
+.under{font-size:9px;color:#57666f;text-align:center;margin-top:8px;letter-spacing:.08em}
+.purse{display:flex;gap:8px;margin-top:14px}
+.pi{flex:1;border:1px solid rgba(46,230,255,.14);border-radius:12px;padding:9px 8px;background:rgba(10,14,18,.7);text-align:center}
+.pi .k{display:block;font-size:7.5px;color:#6d7c88;letter-spacing:.1em;margin-bottom:4px}
+.pi .v{font-size:14px;font-weight:800;color:#8ff6ff}
+.tools{display:flex;gap:8px;margin-top:12px}
+.obtn{flex:1;border:1px solid rgba(46,230,255,.22);background:rgba(10,16,20,.8);color:#8ff6ff;
+  font-family:inherit;font-size:9px;letter-spacing:.06em;padding:10px 4px;border-radius:11px}
+.obtn:active{background:rgba(46,230,255,.16)}
+.obtn.on{border-color:#37e08a;color:#9dffcf}
+.obtn.warn{border-color:#ff3b30;color:#ff8a82}
+.goalbox{margin-top:11px;font-size:10px;color:#6d7c88;line-height:1.5}
+.goalbar{height:6px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:6px}
+.goalbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd257,#ff9d3b);width:0;transition:width .3s}
+.forecast{margin-top:12px;font-size:9.5px;color:#57666f;line-height:1.55;border-left:2px solid rgba(46,230,255,.25);padding-left:9px}
+/* ДЕЛА */
+.taskadd{display:flex;gap:8px;margin-bottom:12px}
+.taskadd input{flex:1;background:rgba(10,16,20,.9);border:1px solid rgba(46,230,255,.22);border-radius:11px;
+  color:#e7f6ff;font-family:inherit;font-size:12px;padding:12px 12px;outline:none;min-width:0}
+.taskadd input::placeholder{color:#4b5a63}
+.taskadd button{border:0;border-radius:11px;padding:0 16px;font-family:inherit;font-size:17px;font-weight:800;
+  background:linear-gradient(135deg,#2ee6ff,#8ff6ff);color:#04181d}
+.titem{display:flex;align-items:center;gap:10px;border:1px solid rgba(46,230,255,.14);border-radius:13px;
+  padding:11px 11px;margin-bottom:8px;background:rgba(10,14,18,.72)}
+.titem.done{opacity:.5;border-color:rgba(55,224,138,.25)}
+.titem .tx{flex:1;font-size:12px;line-height:1.4;word-break:break-word}
+.titem.done .tx{text-decoration:line-through;color:#6d7c88}
+.titem .go{border:0;border-radius:9px;padding:8px 11px;font-family:inherit;font-size:9px;font-weight:800;
+  letter-spacing:.06em;background:rgba(55,224,138,.16);color:#9dffcf;border:1px solid rgba(55,224,138,.35)}
+.titem .del{border:0;background:transparent;color:#4b5a63;font-size:16px;padding:2px 4px;line-height:1}
+/* КОПИЛКА */
+.jar{margin-top:10px}
+.jar .jt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11px}
+.jar .jn{font-weight:800;color:#ffd257;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jar .js{font-size:10.5px;color:#8ff6ff;white-space:nowrap}
+.jar .jb{height:9px;border-radius:7px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:7px}
+.jar .jb i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#ffd257,#ff9d3b);transition:width .35s}
+.jar .jl{font-size:9px;color:#6d7c88;margin-top:6px;line-height:1.5}
+.empty{font-size:10.5px;color:#57666f;text-align:center;padding:22px 10px;line-height:1.6;
+  border:1px dashed rgba(46,230,255,.16);border-radius:13px}
+/* УРОВНИ */
+.lrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;margin-bottom:5px;
+  border:1px solid transparent;background:rgba(10,14,18,.55)}
+.lrow.done{background:rgba(55,224,138,.07);border-color:rgba(55,224,138,.2)}
+.lrow.now{border-color:#2ee6ff;background:rgba(46,230,255,.09);box-shadow:0 0 18px rgba(46,230,255,.16)}
+.lmini{flex:0 0 34px;display:flex;align-items:center;justify-content:center}
+.lmini svg{width:34px;height:34px}
+.ltx{flex:1;min-width:0}
+.ln{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr{font-size:8.5px;color:#6d7c88;margin-top:2px}
+.lchk{color:#37e08a;font-size:13px;font-weight:800}
+/* СВОДКА */
+.stats{display:flex;gap:8px;margin-bottom:13px}
+.st{flex:1;border:1px solid rgba(46,230,255,.14);border-radius:12px;padding:10px 7px;background:rgba(10,14,18,.72);text-align:center}
+.st .k{display:block;font-size:7.5px;color:#6d7c88;letter-spacing:.08em;margin-bottom:3px}
+.st .v{font-size:13px;font-weight:800;color:#8ff6ff}
+.st .v.g{color:#9dffcf}
+h2{font-size:10.5px;letter-spacing:.14em;color:#2ee6ff;margin:20px 0 9px;font-weight:700}
+h2 .n{color:#57666f}
+.chart{display:flex;align-items:flex-end;gap:6px;height:88px;padding:0 2px}
+.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
+.chart b{width:100%;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#2ee6ff,rgba(46,230,255,.2));min-height:2px;display:block}
+.chart span{font-size:7.5px;color:#57666f}
+.achv{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border-radius:11px;margin-bottom:6px;
+  border:1px solid rgba(46,230,255,.12);background:rgba(10,14,18,.6)}
+.achv.on{border-color:rgba(255,210,87,.35);background:rgba(255,210,87,.07)}
+.achv .ic{font-size:14px;line-height:1.2}
+.achv .an{font-size:11px;font-weight:700}
+.achv .ad{font-size:8.5px;color:#6d7c88;margin-top:2px}
+.achv.on .an{color:#ffd257}
+.acts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.act{border:1px solid rgba(46,230,255,.24);background:rgba(10,16,20,.85);color:#8ff6ff;
+  font-family:inherit;font-size:10.5px;letter-spacing:.06em;padding:13px;border-radius:12px;font-weight:700}
+.act.danger{border-color:rgba(255,59,48,.45);color:#ff8a82}
+.act.danger.warn{background:rgba(255,59,48,.16);color:#fff}
+.act:active{filter:brightness(1.2)}
+.act.sm{padding:10px;font-size:9.5px}
+.dreamform{display:flex;gap:7px;margin-top:10px}
+.dreamform input{flex:1;background:rgba(10,16,20,.9);border:1px solid rgba(46,230,255,.22);border-radius:10px;
+  color:#e7f6ff;font-family:inherit;font-size:11.5px;padding:10px;outline:none;min-width:0}
+.dreamform input::placeholder{color:#4b5a63}
+.dreamform input.sum{flex:0 0 92px;text-align:center}
+/* НИЗ */
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(5,6,8,.94);backdrop-filter:blur(14px);border-top:1px solid rgba(46,230,255,.12);z-index:20}
+.tab{flex:1;border:1px solid rgba(46,230,255,.16);background:transparent;color:#8aa0ad;font-family:inherit;
+  font-size:9px;letter-spacing:.04em;padding:9px 2px;border-radius:10px}
+.tab.active{color:#04181d;background:linear-gradient(135deg,#2ee6ff,#8ff6ff);border-color:transparent;font-weight:800}
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);background:rgba(46,230,255,.14);
+  border:1px solid rgba(46,230,255,.45);color:#e7f6ff;font-size:11px;padding:11px 15px;border-radius:12px;
+  opacity:0;pointer-events:none;transition:.22s;z-index:40;max-width:88%;text-align:center;backdrop-filter:blur(8px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hd">
+    <div class="brand">01// ACHIEVEMENT TERMINAL</div>
+    <div class="mini" id="streakMini">СЕРИЯ · 0</div>
+  </div>
+  <h1>АЧИВКА<span class="d">·</span>ПРОКАЧКА</h1>
+  <div class="tags">CLICK PROTOCOL // LEVEL SYSTEM // DREAM JAR // REWARD ₽</div>
+
+  <section id="scr-home" class="scr active">
+    <div class="card">
+      <div class="row">
+        <div class="lvlbox"><div class="k">LVL</div><div class="v" id="lvlNum">01</div></div>
+        <div class="hold">
+          <div class="tname" id="titleName">Новичок</div>
+          <div class="rank" id="rankName">РАНГ · РЖАВЬ</div>
+          <div class="nom" id="nom">+1 ₽ за уровень</div>
+        </div>
+        <div class="bwrap" id="badge"></div>
+      </div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="binfo"><span id="progText">0 / 1</span><span id="progLeft">осталось 1</span></div>
+      <div class="bar en"><i id="energyFill"></i></div>
+      <div class="binfo"><span id="energyText">120 / 120</span><span id="combo">комбо не активно</span></div>
+    </div>
+
+    <button class="press" id="pressBtn">НАЖАТЬ</button>
+    <div class="under" id="underText">одно нажатие = одно выполненное дело</div>
+
+    <div class="purse">
+      <div class="pi"><span class="k">К ВЫВОДУ</span><span class="v" id="due">0 ₽</span></div>
+      <div class="pi"><span class="k">ВСЕГО</span><span class="v" id="total">0 ₽</span></div>
+      <div class="pi"><span class="k">ДЕЛ В РАБОТЕ</span><span class="v" id="openTasks">0</span></div>
+    </div>
+
+    <div class="jar" id="jarMini"></div>
+
+    <div class="tools">
+      <button class="obtn" id="bonusBtn">БОНУС ДНЯ</button>
+      <button class="obtn" id="focusBtn">ФОКУС 25 МИН</button>
+      <button class="obtn" id="goalBtn">ЦЕЛЬ ДНЯ</button>
+    </div>
+    <div class="goalbox" id="goalBox"></div>
+    <div class="forecast" id="forecast"></div>
+  </section>
+
+  <section id="scr-task" class="scr">
+    <div class="taskadd">
+      <input id="taskInput" type="text" placeholder="что нужно сделать?" autocomplete="off">
+      <button id="addTask">+</button>
+    </div>
+    <div class="stats">
+      <div class="st"><span class="k">В РАБОТЕ</span><span class="v" id="tOpen">0</span></div>
+      <div class="st"><span class="k">СЕГОДНЯ</span><span class="v" id="tToday">0</span></div>
+      <div class="st"><span class="k">ВСЕГО</span><span class="v g" id="tAll">0</span></div>
+    </div>
+    <div id="taskList"></div>
+    <div class="under" style="margin-top:12px">тап «СДЕЛАЛ» = нажатие: прогресс, энергия, комбо и награда считаются как обычно</div>
+  </section>
+
+  <section id="scr-lvl" class="scr">
+    <div id="levelsWrap"></div>
+  </section>
+
+  <section id="scr-sum" class="scr">
+    <div class="stats">
+      <div class="st"><span class="k">К ВЫВОДУ</span><span class="v" id="sDue">0 ₽</span></div>
+      <div class="st"><span class="k">ВСЕГО</span><span class="v" id="sTotal">0 ₽</span></div>
+      <div class="st"><span class="k">ВЫПЛАЧЕНО</span><span class="v g" id="sPaid">0 ₽</span></div>
+    </div>
+
+    <h2>КОПИЛКА МЕЧТИ</h2>
+    <div class="card" style="padding:13px">
+      <div id="dreamView"></div>
+      <div class="dreamform">
+        <input id="dreamName" type="text" maxlength="38" placeholder="на что копишь?" autocomplete="off">
+        <input id="dreamSum" class="sum" type="number" inputmode="numeric" placeholder="₽">
+      </div>
+      <button class="act sm" id="dreamSave" style="margin-top:8px">СОХРАНИТЬ МЕЧТУ</button>
+      <div class="under" style="margin-top:7px">забрал деньги кнопкой «очистить» — они падают в копилку</div>
+    </div>
+
+    <h2>ДОХОД · 7 ДНЕЙ</h2>
+    <div class="chart" id="chart"></div>
+
+    <h2>АЧИВКИ <span class="n" id="achvCount">0 / 13</span></h2>
+    <div id="achvWrap"></div>
+
+    <h2>ВЫПЛАТА</h2>
+    <div class="acts">
+      <button class="act" id="clearBtn">ЗАБРАЛ · ОЧИСТИТЬ</button>
+      <button class="act" id="reportBtn">СКОПИРОВАТЬ ОТЧЁТ</button>
+      <button class="act" id="exportBtn">СКОПИРОВАТЬ КОД ПРОГРЕССА</button>
+      <button class="act" id="importBtn">ВСТАВИТЬ КОД ПРОГРЕССА</button>
+      <button class="act danger" id="resetBtn">ПОЛНЫЙ СБРОС · ДО УРОВНЯ 1</button>
+    </div>
+    <div class="under" style="margin-top:12px">очистка денег уровень не сбрасывает — с уровня идёшь дальше</div>
+  </section>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="home">ГЛАВНЫЙ</button>
+  <button class="tab" data-tab="task">ДЕЛА</button>
+  <button class="tab" data-tab="lvl">УРОВНИ</button>
+  <button class="tab" data-tab="sum">СВОДКА</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i);};
+var MAXL=100, EMAX=120, EREGEN=45, COMBO_WINDOW=1300, COMBO_GAIN=5, FOCUS_LEN=25*60*1000;
+
+var RANKS=[
+ {n:'РЖАВЬ',   a:'#9aa6ad', b:'#3d4549', g:'rgba(154,166,173,.35)'},
+ {n:'БРОНЗА',  a:'#d4915a', b:'#7a4a1d', g:'rgba(212,145,90,.40)'},
+ {n:'СЕРЕБРО', a:'#cfd8e3', b:'#7c8794', g:'rgba(207,216,227,.40)'},
+ {n:'ЗОЛОТО',  a:'#ffd257', b:'#b8860b', g:'rgba(255,210,87,.45)'},
+ {n:'ПЛАТИНА', a:'#d9f6ff', b:'#7fa8b5', g:'rgba(217,246,255,.45)'},
+ {n:'ИЗУМРУД', a:'#46f0a0', b:'#0f7a4e', g:'rgba(70,240,160,.40)'},
+ {n:'САПФИР',  a:'#4aa8ff', b:'#12437f', g:'rgba(74,168,255,.40)'},
+ {n:'РУБИН',   a:'#ff5a6e', b:'#8a0f24', g:'rgba(255,90,110,.40)'},
+ {n:'АМЕТИСТ', a:'#b57bff', b:'#4b1f8a', g:'rgba(181,123,255,.40)'},
+ {n:'ЛЕГЕНДА', a:'#ffffff', b:'#7f8cff', g:'rgba(255,255,255,.50)'}
+];
+
+var TITLES=[
+'Новичок','Ученик','Пробник','Старатель','Любитель','Практик','Трудяга','Упорный','Юниор','Рядовик',
+'Стажёр','Подмастерье','Ловкач','Сноровистый','Умелец','Знаток','Мастеровой','Дока','Спец','Бывалый',
+'Профи','Ас','Виртуоз','Маэстро','Эксперт','Гуру','Специалист','Инженер','Стратег','Аналитик',
+'Офицер','Лейтенант','Капитан','Майор','Полковник','Генерал','Маршал','Командор','Легионер','Центурион',
+'Гладиатор','Чемпион','Рекордсмен','Лидер','Вожак','Авторитет','Магнат','Барон','Граф','Герцог',
+'Рыцарь','Паладин','Хранитель','Страж','Защитник','Ветеран','Элита','Гвардеец','Охотник','Следопыт',
+'Мастер','Механик','Алхимик','Чародей','Заклинатель','Волшебник','Оракул','Архимаг','Мистик','Просветлённый',
+'Титан','Гигант','Исполин','Колосс','Атлант','Громовержец','Небожитель','Звездочёт','Космонавт','Пилот',
+'Сингулярность','Квант','Ядро','Реактор','Двигатель','Ускоритель','Импульс','Вектор','Пионер','Гений',
+'Полубог','Пророк','Легенда','Миф','Эпос','Абсолют','Вершина','Олимп','Венец','Бессмертный'
+];
+
+var ACHS=[
+ {id:'a1', n:'Первый шаг',   d:'закрыть 1 уровень',              ic:'○'},
+ {id:'a5', n:'Разгон',       d:'дойти до 5 уровня',              ic:'◔'},
+ {id:'a10',n:'Десятка',      d:'дойти до 10 уровня',             ic:'◑'},
+ {id:'a25',n:'Четвертак',    d:'дойти до 25 уровня',             ic:'◕'},
+ {id:'a50',n:'Полтинник',    d:'дойти до 50 уровня',             ic:'●'},
+ {id:'a100',n:'Бессмертный', d:'дойти до 100 уровня',            ic:'★'},
+ {id:'t1', n:'Список дел',   d:'выполнить первую задачу',        ic:'✓'},
+ {id:'t10',n:'Дисциплина',   d:'выполнить 10 задач',             ic:'✓✓'},
+ {id:'t100',n:'Машина',      d:'выполнить 100 задач',            ic:'⚙'},
+ {id:'f1', n:'В потоке',     d:'провести сессию фокуса',         ic:'◷'},
+ {id:'s7', n:'Неделя',       d:'серия 7 дней подряд',            ic:'⊕'},
+ {id:'m100',n:'Первая сотня',d:'заработать 100 ₽',               ic:'₽'},
+ {id:'m1000',n:'Тысячник',   d:'заработать 1000 ₽',              ic:'₽₽'}
+];
+
+function fresh(){
+  return {
+    level:1, maxLevel:1, presses:0, total:0, paid:0, energy:EMAX,
+    lastRegen:Date.now(), comboTaps:0, lastPress:0,
+    history:[], streak:0, lastDay:'', bonusDay:'', goalDay:'',
+    focusUntil:0, focusDone:0, achv:[], days:{}, tasks:[], taskDone:0,
+    dream:{name:'',target:0}, jar:0, ver:7
+  };
+}
+var S=fresh();
+var armed={};
+
+function load(){
+  try{
+    var raw=localStorage.getItem('achivka_v7');
+    if(!raw) return;
+    var o=JSON.parse(raw);
+    if(!o||typeof o!=='object') return;
+    var f=fresh();
+    for(var k in f){ if(o[k]!==undefined) f[k]=o[k]; }
+    if(!f.dream||typeof f.dream!=='object') f.dream={name:'',target:0};
+    if(!Array.isArray(f.tasks)) f.tasks=[];
+    if(!Array.isArray(f.achv)) f.achv=[];
+    if(!Array.isArray(f.history)) f.history=[];
+    if(typeof f.days!=='object'||!f.days) f.days={};
+    S=f;
+  }catch(e){}
+}
+function save(){ try{ localStorage.setItem('achivka_v7',JSON.stringify(S)); }catch(e){} }
+
+function pad(n){ return n<10?'0'+n:''+n; }
+function dkey(ts){
+  var d=new Date(ts||Date.now());
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function releaseDay(){ return dkey(Date.now()-86400000); }
+function dayRec(){
+  var k=dkey();
+  if(!S.days[k]) S.days[k]={lvls:0,amount:0,tasks:0};
+  return S.days[k];
+}
+function rankIdx(l){ return Math.max(1,Math.min(10,Math.floor((l-1)/10)+1)); }
+function needFor(l){ return l+Math.floor(l/5)+Math.floor(l/20); }
+function rewardBase(l){ return Math.round(l*(1+0.05*(l-1))); }
+function achMul(){ return 1+S.achv.length*0.015; }
+function streakMul(){ return 1+Math.min(S.streak,10)*0.02; }
+function focusMul(){ return Date.now()<S.focusUntil?1.5:1; }
+function comboMul(){ return 1+Math.min(S.comboTaps,10)*0.02; }
+function rewardFor(l){
+  return Math.round(rewardBase(l)*achMul()*streakMul()*focusMul()*comboMul());
+}
+function dueSum(){
+  var s=0;
+  for(var i=0;i<S.history.length;i++) if(!S.history[i].paid) s+=S.history[i].amount;
+  return s;
+}
+function fmt(n){ return n+' ₽'; }
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function regen(){
+  var now=Date.now();
+  if(S.energy>=EMAX){ S.lastRegen=now; return; }
+  var step=EREGEN*1000;
+  var got=Math.floor((now-S.lastRegen)/step);
+  if(got>0){
+    S.energy=Math.min(EMAX,S.energy+got);
+    S.lastRegen=S.lastRegen+got*step;
+    if(S.energy>=EMAX) S.lastRegen=now;
+  }
+}
+
+function toast(msg){
+  var t=$('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm=setTimeout(function(){ t.classList.remove('show'); },2200);
+}
+function vib(ms){ if(navigator.vibrate) try{navigator.vibrate(ms);}catch(e){} }
+
+function badgeSVG(lv){
+  var r=rankIdx(lv), R=RANKS[r-1], id='bg'+lv;
+  var teeth=4+r*2, i, a, t='';
+  for(i=0;i<teeth;i++){
+    a=(360/teeth)*i;
+    t+='<rect x="34.6" y="1.1" width="1.8" height="6.4" rx="0.9" fill="'+R.a+'" opacity="'+(0.35+r*0.05).toFixed(2)+'" transform="rotate('+a+' 36 36)"/>';
+  }
+  var inner='';
+  if(r>=5) inner='<path d="M36 16 L44.5 36 L36 56 L27.5 36 Z" fill="none" stroke="'+R.a+'" stroke-width="1" opacity="0.8"/>';
+  var dash=r>=9?' stroke-dasharray="2 3"':'';
+  var scratch=r===1?'<path d="M20 30 L28 26 M24 45 L31 41" stroke="#ffffff" stroke-width="0.8" opacity="0.16"/>':'';
+  var txt=(r>=5)?'#ffffff':'#0b1116';
+  return '<svg viewBox="0 0 72 72" width="66" height="66">'
+    +'<defs><radialGradient id="'+id+'" cx="35%" cy="27%" r="82%">'
+    +'<stop offset="0%" stop-color="'+R.a+'"/><stop offset="100%" stop-color="'+R.b+'"/></radialGradient></defs>'
+    +'<circle cx="36" cy="36" r="31" fill="'+R.g+'" opacity="0.32"/>'
+    +t
+    +'<circle cx="36" cy="36" r="26" fill="url(#'+id+')" stroke="'+R.a+'" stroke-width="1.6"/>'
+    +'<circle cx="36" cy="36" r="20.5" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.22"'+dash+'/>'
+    +inner+scratch
+    +'<text x="36" y="41.5" text-anchor="middle" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="'+txt+'" opacity="0.9">'+lv+'</text>'
+    +'</svg>';
+}
+
+/* --- ачивки --- */
+function achDone(id){
+  switch(id){
+    case 'a1': return S.maxLevel>1;
+    case 'a5': return S.maxLevel>=5;
+    case 'a10': return S.maxLevel>=10;
+    case 'a25': return S.maxLevel>=25;
+    case 'a50': return S.maxLevel>=50;
+    case 'a100': return S.maxLevel>=100;
+    case 't1': return S.taskDone>=1;
+    case 't10': return S.taskDone>=10;
+    case 't100': return S.taskDone>=100;
+    case 'f1': return S.focusDone>=1;
+    case 's7': return S.streak>=7;
+    case 'm100': return S.total>=100;
+    case 'm1000': return S.total>=1000;
+  }
+  return false;
+}
+function checkAchv(){
+  for(var i=0;i<ACHS.length;i++){
+    var a=ACHS[i];
+    if(S.achv.indexOf(a.id)===-1 && achDone(a.id)){
+      S.achv.push(a.id);
+      toast('ачивка · '+a.n);
+    }
+  }
+}
+
+/* --- день/серия --- */
+function dayTouch(){
+  var t=dkey();
+  if(S.lastDay!==t){
+    S.streak = (S.lastDay===releaseDay()) ? (S.streak+1) : 1;
+    S.lastDay=t;
+  }
+}
+
+/* --- нажатие --- */
+function tap(){
+  regen();
+  if(S.energy<=0){ toast('энергия 0 · жди восстановления'); return false; }
+  var now=Date.now();
+  if(now-S.lastPress<COMBO_WINDOW){
+    S.comboTaps++;
+    if(S.comboTaps%COMBO_GAIN===0 && S.energy<EMAX) S.energy++;
+  }else{
+    S.comboTaps=0;
+  }
+  S.lastPress=now;
+  S.energy--;
+  dayTouch();
+  S.presses++;
+  if(S.presses>=needFor(S.level)) complete();
+  checkAchv();
+  save(); renderAll();
+  return true;
+}
+
+function complete(){
+  var lv=S.level;
+  var amount=rewardFor(lv);
+  S.history.push({level:lv, amount:amount, ts:Date.now(), paid:false});
+  S.total+=amount;
+  var rec=dayRec();
+  rec.lvls=(rec.lvls||0)+1;
+  rec.amount=(rec.amount||0)+amount;
+  S.level=Math.min(MAXL,lv+1);
+  S.maxLevel=Math.max(S.maxLevel,S.level);
+  S.presses=0;
+  if(S.energy<EMAX) S.energy=Math.min(EMAX,S.energy+1);
+  vib([12,40,18]);
+  toast('ур. '+pad(lv)+' закрыт · +'+amount+' ₽');
+  checkGoal();
+}
+function goalTarget(){ return Math.max(5,Math.ceil(S.level/12)); }
+function checkGoal(){
+  var rec=dayRec(), t=goalTarget();
+  if(rec.lvls>=t && S.goalDay!==dkey()){
+    S.goalDay=dkey();
+    var bonus=3*rankIdx(S.level);
+    S.history.push({level:S.level, amount:bonus, ts:Date.now(), paid:false});
+    S.total+=bonus;
+    toast('цель дня выполнена · +'+bonus+' ₽');
+  }
+}
+
+/* --- копилка мечты --- */
+function jarHTML(){
+  var d=S.dream||{name:'',target:0};
+  if(!d.name || !d.target){
+    return '<div class="jl">мечта не задана — открой «СВОДКУ» и запиши, на что копишь</div>';
+  }
+  var left=Math.max(0,d.target-S.jar);
+  var p=Math.min(100,S.jar/d.target*100);
+  var lvls=0, need=0, l=S.level;
+  while(lvls<500 && need<left){ need+=rewardFor(l); lvls++; l=Math.min(MAXL,l+1); }
+  var line = left>0
+    ? 'осталось '+fmt(left)+' · примерно '+lvls+' ур. (до ур. '+pad(Math.min(MAXL,S.level+lvls-1))+')'
+    : 'мечта достигнута · '+d.name;
+  return '<div class="jt"><span class="jn">'+esc(d.name)+'</span><span class="js">'+S.jar+' / '+d.target+' ₽</span></div>'
+    +'<div class="jb"><i style="width:'+p.toFixed(1)+'%"></i></div>'
+    +'<div class="jl">'+line+'</div>';
+}
+
+/* --- рендер --- */
+function renderHome(){
+  var lv=S.level, need=needFor(lv), p=Math.min(S.presses,need);
+  $('lvlNum').textContent=pad(lv);
+  $('rankName').textContent='РАНГ · '+RANKS[rankIdx(lv)-1].n;
+  $('titleName').textContent=TITLES[lv-1]||'—';
+  $('nom').textContent='+'+Math.round(rewardBase(lv)*achMul()*streakMul()*focusMul())+' ₽ за уровень';
+  $('badge').innerHTML=badgeSVG(lv);
+  $('fill').style.width=(p/need*100).toFixed(1)+'%';
+  $('progText').textContent=p+' / '+need;
+  $('progLeft').textContent='осталось '+(need-p);
+  $('energyFill').style.width=(S.energy/EMAX*100).toFixed(1)+'%';
+  $('energyText').textContent=S.energy+' / '+EMAX+' энергии';
+  $('combo').textContent=Date.now()<S.focusUntil?'ФОКУС ×1.5':(S.comboTaps>=3?'КОМБО ×'+comboMul().toFixed(2):'комбо не активно');
+  $('due').textContent=fmt(dueSum());
+  $('total').textContent=fmt(S.total);
+  $('openTasks').textContent=S.tasks.filter(function(t){return !t.done;}).length;
+  $('streakMini').textContent='СЕРИЯ · '+S.streak+' дн';
+  $('pressBtn').classList.toggle('ok',S.focusUntil>Date.now());
+  $('bonusBtn').classList.toggle('on',S.bonusDay===dkey());
+  $('focusBtn').classList.toggle('on',S.focusUntil>Date.now());
+  $('goalBtn').classList.toggle('on',dayRec().lvls>=goalTarget());
+  $('jarMini').innerHTML=jarHTML();
+
+  var rec=dayRec(), g=goalTarget();
+  $('goalBox').innerHTML='ЦЕЛЬ ДНЯ: закрыть '+g+' ур. · сейчас '+rec.lvls+' · награда +'+(3*rankIdx(S.level))+' ₽'
+    +'<div class="goalbar"><i style="width:'+Math.min(100,rec.lvls/g*100).toFixed(1)+'%"></i></div>';
+
+  var left=0, l;
+  for(l=lv;l<MAXL;l++) left+=needFor(l);
+  left-=Math.min(S.presses,needFor(S.level));
+  if(left<0) left=0;
+  var hours=(left*EREGEN/3600).toFixed(1);
+  $('forecast').innerHTML='До ур. 100 осталось '+left+' нажатий<br>'
+    +'это ~'+hours+' ч чистой регенерации энергии · сейчас '+S.energy+' в запасе';
+}
+
+function renderTasks(){
+  var open=S.tasks.filter(function(t){return !t.done;});
+  var done=S.tasks.filter(function(t){return t.done;}).slice(-20).reverse();
+  $('tOpen').textContent=open.length;
+  $('tToday').textContent=dayRec().tasks||0;
+  $('tAll').textContent=S.taskDone;
+  var h='';
+  if(!S.tasks.length){
+    h+='<div class="empty">Список пуст.<br>Напиши первое дело сверху — и закрывай его кнопкой «СДЕЛАЛ».<br>Каждое закрытое дело = нажатие прогресса.</div>';
+  }else{
+    open.forEach(function(t){
+      h+='<div class="titem" data-id="'+t.id+'"><div class="tx">'+esc(t.text)+'</div>'
+        +'<button class="go" data-go="'+t.id+'">СДЕЛАЛ</button>'
+        +'<button class="del" data-del="'+t.id+'">×</button></div>';
+    });
+    if(done.length){
+      h+='<h2 style="margin-top:16px">СДЕЛАНО <span class="n">'+done.length+'</span></h2>';
+      done.forEach(function(t){
+        h+='<div class="titem done"><div class="tx">'+esc(t.text)+'</div>'
+          +'<button class="del" data-del="'+t.id+'">×</button></div>';
+      });
+    }
+  }
+  $('taskList').innerHTML=h;
+}
+
+function renderLevels(){
+  var h='', l, R;
+  for(l=1;l<=MAXL;l++){
+    R=RANKS[rankIdx(l)-1];
+    h+='<div class="lrow '+(l<S.level?'done':(l===S.level?'now':''))+'">'
+      +'<div class="lmini">'+badgeSVG(l)+'</div>'
+      +'<div class="ltx"><div class="ln">'+pad(l)+' · '+(TITLES[l-1]||'—')+'</div>'
+      +'<div class="lr">'+R.n+' · награда '+rewardBase(l)+' ₽ · нажатий '+needFor(l)+'</div></div>'
+      +(l<S.level?'<div class="lchk">✓</div>':'')+'</div>';
+  }
+  $('levelsWrap').innerHTML=h;
+}
+
+function renderSum(){
+  $('sDue').textContent=fmt(dueSum());
+  $('sTotal').textContent=fmt(S.total);
+  $('sPaid').textContent=fmt(S.paid);
+  $('achvCount').textContent=S.achv.length+' / '+ACHS.length;
+  $('dreamView').innerHTML=jarHTML();
+
+  var h='', max=1, arr=[], i, v, parts;
+  for(i=6;i>=0;i--){
+    v=(S.days[dkey(Date.now()-i*86400000)]&&S.days[dkey(Date.now()-i*86400000)].amount)||0;
+    if(v>max) max=v;
+    arr.push({k:dkey(Date.now()-i*86400000), v:v});
+  }
+  for(i=0;i<arr.length;i++){
+    parts=arr[i].k.split('-');
+    h+='<div><b style="height:'+Math.max(3,Math.round(arr[i].v/max*70))+'px"></b><span>'+parts[2]+'.'+parts[1]+'</span></div>';
+  }
+  $('chart').innerHTML=h;
+
+  var ah='', a, on;
+  for(i=0;i<ACHS.length;i++){
+    a=ACHS[i]; on=S.achv.indexOf(a.id)>-1;
+    ah+='<div class="achv'+(on?' on':'')+'"><div class="ic">'+(on?'✦':'·')+'</div>'
+      +'<div><div class="an">'+(on?a.n:'???')+'</div>'
+      +'<div class="ad">'+a.d+'</div></div></div>';
+  }
+  $('achvWrap').innerHTML=ah;
+
+  var sum=dueSum();
+  $('clearBtn').textContent='ЗАБРАЛ · ОЧИСТИТЬ'+(sum?' · '+sum+' ₽':'');
+}
+
+function renderAll(){
+  regen();
+  renderHome();
+  renderTasks();
+  renderSum();
+  if($('scr-lvl').classList.contains('active')) renderLevels();
+  save();
+}
+
+/* --- вкладки --- */
+var tabs=document.querySelectorAll('.tab');
+for(var ti=0;ti<tabs.length;ti++){
+  tabs[ti].addEventListener('click',function(){
+    var name=this.getAttribute('data-tab');
+    for(var j=0;j<tabs.length;j++) tabs[j].classList.remove('active');
+    this.classList.add('active');
+    var scrs=['home','task','lvl','sum'];
+    for(var s=0;s<scrs.length;s++){
+      $('scr-'+scrs[s]).classList.toggle('active',scrs[s]===name);
+    }
+    if(name==='lvl') renderLevels();
+    if(name==='sum') renderSum();
+    if(name==='task') renderTasks();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+
+/* --- нажатие --- */
+$('pressBtn').addEventListener('click',function(){
+  if(tap()) vib(10);
+});
+
+/* --- задачи --- */
+function addTask(){
+  var inp=$('taskInput');
+  var t=inp.value.trim();
+  if(!t){ toast('напиши дело'); return; }
+  S.tasks.push({id:'t'+Date.now()+Math.random().toString(36).slice(2,6), text:t.slice(0,140), done:false, ts:0});
+  inp.value='';
+  save(); renderTasks(); renderHome();
+  toast('добавлено в список');
+}
+$('addTask').addEventListener('click',addTask);
+$('taskInput').addEventListener('keydown',function(e){ if(e.key==='Enter') addTask(); });
+
+$('taskList').addEventListener('click',function(e){
+  var go=e.target.getAttribute('data-go');
+  var del=e.target.getAttribute('data-del');
+  if(go){
+    var t=null, i;
+    for(i=0;i<S.tasks.length;i++) if(S.tasks[i].id===go) t=S.tasks[i];
+    if(!t||t.done) return;
+    if(!tap()) return;
+    t.done=true; t.ts=Date.now();
+    S.taskDone++;
+    var rec=dayRec(); rec.tasks=(rec.tasks||0)+1;
+    checkAchv();
+    vib(14);
+    save(); renderAll();
+    toast('дело закрыто · прогресс +1');
+  }
+  if(del){
+    S.tasks=S.tasks.filter(function(x){return x.id!==del;});
+    save(); renderTasks(); renderHome();
+  }
+});
+
+/* --- бонус дня --- */
+$('bonusBtn').addEventListener('click',function(){
+  if(S.bonusDay===dkey()){ toast('бонус дня уже получен'); return; }
+  var bonus=2*rankIdx(S.level);
+  S.bonusDay=dkey();
+  S.history.push({level:S.level, amount:bonus, ts:Date.now(), paid:false});
+  S.total+=bonus;
+  save(); renderAll();
+  toast('бонус дня · +'+bonus+' ₽');
+  vib(20);
+});
+
+/* --- фокус --- */
+$('focusBtn').addEventListener('click',function(){
+  if(Date.now()<S.focusUntil){ toast('фокус уже идёт'); return; }
+  S.focusUntil=Date.now()+FOCUS_LEN;
+  S.focusDone++;
+  checkAchv();
+  save(); renderAll();
+  toast('фокус 25 мин · награда ×1.5');
+});
+setInterval(function(){
+  if(document.hidden) return;
+  var was=Date.now()<S.focusUntil;
+  regen();
+  var now=Date.now()<S.focusUntil;
+  if(was!==now) renderAll();
+  else renderHome();
+  save();
+},5000);
+
+/* --- цель дня --- */
+$('goalBtn').addEventListener('click',function(){
+  var rec=dayRec(), g=goalTarget();
+  toast('цель дня: '+rec.lvls+' из '+g+' уровней');
+});
+
+/* --- мечта --- */
+$('dreamSave').addEventListener('click',function(){
+  var n=$('dreamName').value.trim();
+  var t=parseInt($('dreamSum').value,10);
+  if(!n && !t){
+    S.dream={name:'',target:0}; S.jar=0;
+    save(); renderAll();
+    toast('мечта очищена');
+    return;
+  }
+  if(!n){ toast('напиши название мечты'); return; }
+  if(!t || t<=0){ toast('укажи сумму в рублях'); return; }
+  S.dream={name:n.slice(0,38), target:t};
+  save(); renderAll();
+  toast('мечта сохранена');
+});
+
+/* --- выплата/сброс --- */
+function arm(id, id2, label, confirmLabel){
+  var now=Date.now();
+  if(armed[id] && now-armed[id]<4500){ armed[id]=0; var b=$(id2); b.textContent=label; b.classList.remove('warn'); return true; }
+  armed[id]=now;
+  var btn=$(id2);
+  btn.textContent=confirmLabel;
+  btn.classList.add('warn');
+  setTimeout(function(){ btn.textContent=label; btn.classList.remove('warn'); },4500);
+  return false;
+}
+$('clearBtn').addEventListener('click',function(){
+  var sum=dueSum();
+  if(!sum){ toast('нечего очищать'); return; }
+  if(!arm('clear','clearBtn','ЗАБРАЛ · ОЧИСТИТЬ · '+sum+' ₽','ТОЧНО? ЖМИ ЕЩЁ РАЗ')) return;
+  var i;
+  for(i=0;i<S.history.length;i++) S.history[i].paid=true;
+  S.paid+=sum;
+  S.jar+=sum;
+  save(); renderAll();
+  toast(sum+' ₽ · в копилке '+S.jar+' ₽ · уровень '+pad(S.level));
+});
+$('resetBtn').addEventListener('click',function(){
+  if(!arm('reset','resetBtn','ПОЛНЫЙ СБРОС · ДО УРОВНЯ 1','ПОДТВЕРДИ: СБРОС ВСЕГО')) return;
+  var keepDream=S.dream, keepJar=S.jar;
+  S=fresh();
+  S.dream=keepDream; S.jar=keepJar;
+  save(); renderAll();
+  toast('полный сброс · уровень 1 · копилка сохранена');
+});
+$('reportBtn').addEventListener('click',function(){
+  var closed=0, i;
+  for(i=0;i<S.history.length;i++) closed++;
+  var lines=[
+    'АЧИВКА · ОТЧЁТ',
+    'уровень: '+pad(S.level)+' / 100 · '+(TITLES[S.level-1]||'—'),
+    'ранг: '+RANKS[rankIdx(S.level)-1].n,
+    'заработано всего: '+fmt(S.total),
+    'выплачено: '+fmt(S.paid),
+    'к выводу: '+fmt(dueSum()),
+    'записей начислений: '+closed,
+    'задач выполнено: '+S.taskDone,
+    'серия: '+S.streak+' дн.',
+    'ачивок: '+S.achv.length+' / '+ACHS.length
+  ];
+  if(S.dream && S.dream.name) lines.push('копилка: '+S.jar+' / '+S.dream.target+' ₽ · '+S.dream.name);
+  var txt=lines.join('\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('отчёт скопирован'); },
+      function(){ window.prompt('Скопируй отчёт:',txt); });
+  }else{
+    window.prompt('Скопируй отчёт:',txt);
+  }
+});
+$('exportBtn').addEventListener('click',function(){
+  var txt=JSON.stringify(S);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('код прогресса скопирован'); },
+      function(){ window.prompt('Скопируй код:',txt); });
+  }else{
+    window.prompt('Скопируй код:',txt);
+  }
+});
+$('importBtn').addEventListener('click',function(){
+  var raw=window.prompt('Вставь код прогресса:');
+  if(!raw) return;
+  try{
+    var o=JSON.parse(raw);
+    if(!o||typeof o!=='object'||!o.level) throw new Error('bad');
+    var f=fresh();
+    for(var k in f){ if(o[k]!==undefined) f[k]=o[k]; }
+    if(!f.dream||typeof f.dream!=='object') f.dream={name:'',target:0};
+    if(!Array.isArray(f.tasks)) f.tasks=[];
+    if(!Array.isArray(f.achv)) f.achv=[];
+    if(!Array.isArray(f.history)) f.history=[];
+    if(typeof f.days!=='object'||!f.days) f.days={};
+    S=f;
+    save(); renderAll();
+    toast('прогресс восстановлен');
+  }catch(e){
+    toast('код не подошёл');
+  }
+});
+
+/* --- миграция со старой версии --- */
+try{
+  if(!localStorage.getItem('achivka_v7')){
+    var old=localStorage.getItem('achivka_v6');
+    if(old){
+      var o6=JSON.parse(old);
+      var f6=fresh(), kk;
+      for(kk in f6){ if(o6[kk]!==undefined) f6[kk]=o6[kk]; }
+      f6.ver=7;
+      S=f6;
+      save();
+    }
+  }
+}catch(e){}
+
+/* --- старт --- */
+load();
+dayTouch();
+regen();
+renderAll();
+setTimeout(function(){ save(); },300);
+})();
+</script>
+</body>
+</html>
