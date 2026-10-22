@@ -66,11 +66,15 @@ body::after{
 .corners::before{top:-1px;left:-1px;border-right:0;border-bottom:0;border-radius:8px 0 0 0;}
 .corners::after{bottom:-1px;right:-1px;border-left:0;border-top:0;border-radius:0 0 8px 0;}
 
-.lvl-top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:16px;}
-.lvl-name{font-size:9px;letter-spacing:.18em;color:var(--mute);}
-.lvl-big{font-size:26px;color:#fff;letter-spacing:.04em;margin-top:6px;}
-.reward{text-align:right;}
-.reward b{display:block;font-size:19px;color:var(--green);}
+.lvl-head{display:flex;align-items:center;gap:13px;margin-bottom:16px;}
+.badge-main{flex:0 0 84px;width:84px;height:84px;filter:drop-shadow(0 0 12px rgba(46,230,255,.28));}
+.lvl-info{flex:1;min-width:0;}
+.lvl-name{font-size:8.5px;letter-spacing:.16em;color:var(--mute);}
+.lvl-big{font-size:24px;color:#fff;letter-spacing:.04em;margin-top:4px;line-height:1.1;}
+.lvl-title{font-size:15px;color:var(--cyan);margin-top:3px;letter-spacing:.02em;word-break:break-word;}
+.lvl-rank{font-size:8px;letter-spacing:.14em;color:rgba(127,151,166,.95);margin-top:5px;}
+.reward{text-align:right;flex:0 0 auto;}
+.reward b{display:block;font-size:19px;color:var(--green);white-space:nowrap;}
 .reward small{font-size:8px;letter-spacing:.16em;color:var(--mute);}
 
 .prog-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.14em;color:var(--mute);margin-bottom:8px;}
@@ -81,6 +85,7 @@ body::after{
   box-shadow:0 0 14px rgba(46,230,255,.55);
   transition:width .42s cubic-bezier(.2,.9,.2,1);
 }
+.next{font-size:9px;letter-spacing:.08em;color:rgba(127,151,166,.85);margin-top:10px;}
 
 .act{
   margin-top:18px;width:100%;border-radius:22px;border:1px solid rgba(46,230,255,.45);
@@ -142,10 +147,46 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
   box-shadow:0 0 24px rgba(255,59,48,.35);
 }
 .clear:disabled{opacity:.45;border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--mute);box-shadow:none;}
-.ghost{
-  margin-top:10px;width:100%;background:none;border:0;color:rgba(127,151,166,.7);
-  font-family:inherit;font-size:10px;letter-spacing:.14em;padding:10px;cursor:pointer;
+
+.reset{
+  margin-top:10px;width:100%;border-radius:18px;padding:15px;cursor:pointer;
+  border:1px dashed rgba(255,59,48,.45);background:rgba(255,59,48,.05);
+  color:rgba(255,180,175,.9);font-family:inherit;font-size:11px;letter-spacing:.13em;
+  transition:background .2s ease, color .2s ease, border-color .2s ease;
 }
+.reset.armed{
+  border-style:solid;border-color:#ff3b30;color:#fff;
+  background:linear-gradient(180deg,rgba(255,59,48,.4),rgba(255,59,48,.12));
+  box-shadow:0 0 26px rgba(255,59,48,.4);
+}
+
+/* ---------- витрина уровней ---------- */
+.rank-strip{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;
+  border:1px solid rgba(46,230,255,.16);background:rgba(9,14,18,.8);
+}
+.rank-strip .bg{width:46px;height:46px;flex:0 0 46px;}
+.rank-strip b{display:block;font-size:12px;color:#fff;letter-spacing:.1em;}
+.rank-strip small{display:block;font-size:8.5px;color:var(--mute);letter-spacing:.12em;margin-top:5px;}
+
+.lvlist{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+.lvrow{
+  display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:14px;
+  border:1px solid rgba(46,230,255,.10);background:rgba(9,14,18,.7);
+  opacity:.55;transition:opacity .2s ease, border-color .2s ease;
+}
+.lvrow.done{opacity:1;border-color:rgba(55,245,160,.22);background:rgba(8,18,15,.72);}
+.lvrow.now{opacity:1;border-color:rgba(46,230,255,.6);background:rgba(9,20,26,.92);box-shadow:0 0 18px rgba(46,230,255,.16);}
+.lvrow .bg{width:42px;height:42px;flex:0 0 42px;}
+.lvrow .nm{flex:1;min-width:0;}
+.lvrow .nm b{display:block;font-size:12px;color:#fff;letter-spacing:.02em;word-break:break-word;}
+.lvrow .nm small{display:block;font-size:8.5px;color:var(--mute);letter-spacing:.12em;margin-top:3px;}
+.lvrow .rw{font-size:11.5px;color:var(--green);white-space:nowrap;}
+.lvrow.done .rw{color:rgba(55,245,160,.65);}
+.lvrow .stt{font-size:9px;letter-spacing:.1em;color:var(--mute);white-space:nowrap;}
+
+.bsvg.r10{animation:rainbow 5s linear infinite;}
+@keyframes rainbow{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
 
 /* ---------- тост и табы ---------- */
 .toast{
@@ -159,14 +200,14 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
 .toast.on{opacity:1;transform:translate(-50%,0);}
 
 .tabs{
-  position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;
-  padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:7px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
   background:linear-gradient(180deg,rgba(5,6,8,0),rgba(5,6,8,.97) 42%);
 }
 .tab{
-  flex:1;padding:14px 10px;border-radius:16px;cursor:pointer;
+  flex:1;padding:13px 6px;border-radius:15px;cursor:pointer;
   border:1px solid rgba(46,230,255,.16);background:rgba(8,12,16,.9);
-  color:var(--mute);font-family:inherit;font-size:11px;letter-spacing:.16em;
+  color:var(--mute);font-family:inherit;font-size:10px;letter-spacing:.1em;
   transition:color .2s ease, background .2s ease;
 }
 .tab.on{
@@ -187,15 +228,18 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     <div class="avatar"><b id="avLvl">01</b><small>LVL</small></div>
   </div>
   <div class="hr-rule"></div>
-  <div class="htags">CLICK PROTOCOL // LEVEL SYSTEM // REWARD &#8381;</div>
+  <div class="htags">CLICK PROTOCOL // 100 LEVELS // REWARD &#8381;</div>
 </header>
 
 <section class="screen on" id="scrMain">
   <div class="panel corners">
-    <div class="lvl-top">
-      <div>
+    <div class="lvl-head">
+      <div class="badge-main" id="badgeMain"></div>
+      <div class="lvl-info">
         <div class="lvl-name">ТЕКУЩИЙ УРОВЕНЬ</div>
         <div class="lvl-big" id="lvlBig">УР. 01</div>
+        <div class="lvl-title" id="titleMain">Новичок</div>
+        <div class="lvl-rank" id="rankMain">РАНГ: РЖАВЬ</div>
       </div>
       <div class="reward">
         <b id="rewVal">+1 &#8381;</b>
@@ -208,6 +252,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
       <span class="act-main">НАЖАТЬ</span>
       <span class="act-sub">нажми, когда сделал задание</span>
     </button>
+    <div class="next" id="nextLine"></div>
   </div>
   <div class="stats">
     <div class="stat"><span class="k">К ВЫВОДУ</span><span class="v" id="pend">0 &#8381;</span></div>
@@ -230,7 +275,19 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     </table>
   </div>
   <button class="clear" id="btnClear">ЗАБРАЛ · ОЧИСТИТЬ</button>
-  <button class="ghost" id="btnReset">сбросить весь прогресс</button>
+  <button class="reset" id="btnReset">ПОЛНЫЙ СБРОС · ДО УРОВНЯ 1</button>
+</section>
+
+<section class="screen" id="scrLevels">
+  <div class="sec-title">03// ВСЕ 100 УРОВНЕЙ</div>
+  <div class="rank-strip">
+    <div class="bg" id="rankBadge"></div>
+    <div>
+      <b id="rankName">РАНГ: РЖАВЬ</b>
+      <small id="rankRange">УРОВНИ 01–10 · ЗНАЧОК: РЖАВАЯ ЖЕСТЯНКА</small>
+    </div>
+  </div>
+  <div class="lvlist" id="lvList"></div>
 </section>
 
 <div class="toast" id="toast"></div>
@@ -238,15 +295,48 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
 <nav class="tabs">
   <button class="tab on" data-scr="main">ТЕРМИНАЛ</button>
   <button class="tab" data-scr="stats">СВОДКА</button>
+  <button class="tab" data-scr="levels">УРОВНИ</button>
 </nav>
 
 <script>
 (function(){
   "use strict";
   var KEY = "achivka_v1";
+  var MAX = 100;
+
+  var TITLES = [
+    "Новичок","Ученик","Пробник","Старатель","Любитель","Практик","Трудяга","Упорный","Юниор","Рядовой",
+    "Стажёр","Подмастерье","Смекалистый","Ловкач","Сноровистый","Умелец","Знаток","Мастеровой","Дока","Спец",
+    "Профи","Ас","Виртуоз","Маэстро","Эксперт","Гуру","Специалист","Инженер","Стратег","Аналитик",
+    "Офицер","Лейтенант","Капитан","Майор","Полковник","Генерал","Маршал","Командор","Легионер","Центурион",
+    "Гладиатор","Чемпион","Рекордсмен","Лидер","Вожак","Авторитет","Магнат","Барон","Граф","Герцог",
+    "Рыцарь","Паладин","Хранитель","Страж","Защитник","Ветеран","Элита","Гвардеец","Охотник","Следопыт",
+    "Мастер","Механик","Алхимик","Чародей","Заклинатель","Волшебник","Оракул","Архимаг","Мистик","Просветлённый",
+    "Титан","Гигант","Исполин","Колосс","Атлант","Громовержец","Небесный","Звездочёт","Космонавт","Пилот",
+    "Сингулярность","Квант","Ядро","Реактор","Двигатель","Турбина","Ускоритель","Форсаж","Импульс","Вектор",
+    "Легенда","Миф","Эпос","Абсолют","Вершина","Олимп","Венец","Полубог","Архитектор","БЕССМЕРТНЫЙ"
+  ];
+
+  var RANKS = [
+    {n:"РЖАВЬ",      d:"ржавая жестянка",        c1:"#9aa3aa", c2:"#333b40"},
+    {n:"БРОНЗА",     d:"бронзовый жетон",        c1:"#e09a55", c2:"#65370f"},
+    {n:"СЕРЕБРО",    d:"серебряный медальон",    c1:"#eaf2fa", c2:"#6d7885"},
+    {n:"ЗОЛОТО",     d:"золотая звезда",         c1:"#ffd766", c2:"#9a6b00"},
+    {n:"ПЛАТИНА",    d:"платиновый щит",         c1:"#dcf9ff", c2:"#5f8f9e"},
+    {n:"ИЗУМРУД",    d:"изумрудный кристалл",    c1:"#5cf7ae", c2:"#075c3b"},
+    {n:"САПФИР",     d:"сапфировый клинок",      c1:"#63bbff", c2:"#0c3068"},
+    {n:"РУБИН",      d:"рубиновый ореол",        c1:"#ff6a7b", c2:"#6f0718"},
+    {n:"АМЕТИСТ",    d:"аметистовая корона",     c1:"#c68dff", c2:"#3a1063"},
+    {n:"ЛЕГЕНДА",    d:"легендарный трофей",     c1:"#7df3ff", c2:"#ff5ad0"}
+  ];
+
+  function rankOf(lv){ return Math.max(1, Math.min(10, Math.ceil(lv / 10))); }
+  function titleOf(lv){ return TITLES[Math.max(0, Math.min(MAX - 1, lv - 1))] || "?"; }
+
   var DEF = { level:1, presses:0, entries:[], totalEarned:0, withdrawn:0 };
   var S = load();
-  var lock = false, clearArmed = false, armTimer = null, flashTimer = null;
+  var lock = false, clearArmed = false, resetArmed = false;
+  var armTimer = null, resetTimer = null, flashTimer = null, uidc = 0;
 
   function load(){
     try{
@@ -254,7 +344,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
       if(!raw) return { level:1, presses:0, entries:[], totalEarned:0, withdrawn:0 };
       var p = JSON.parse(raw) || {};
       return {
-        level: Math.max(1, parseInt(p.level,10) || 1),
+        level: Math.max(1, Math.min(MAX, parseInt(p.level,10) || 1)),
         presses: Math.max(0, parseInt(p.presses,10) || 0),
         entries: Array.isArray(p.entries) ? p.entries.filter(function(e){ return e && e.lv && e.sum; }) : [],
         totalEarned: Number(p.totalEarned) || 0,
@@ -267,9 +357,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
   function el(id){ return document.getElementById(id); }
   function pad(n){ n = String(n); return n.length < 2 ? "0" + n : n; }
   function money(n){ return Number(n).toLocaleString("ru-RU") + " \u20BD"; }
-  function pending(){
-    return S.entries.reduce(function(a,e){ return a + (e.paid ? 0 : e.sum); }, 0);
-  }
+  function pending(){ return S.entries.reduce(function(a,e){ return a + (e.paid ? 0 : e.sum); }, 0); }
   function todaySum(){
     var d = new Date();
     var start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -280,9 +368,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     var d = new Date(t);
     return pad(d.getDate()) + "." + pad(d.getMonth()+1) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
   }
-  function buzz(p){
-    try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){}
-  }
+  function buzz(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
   function flash(txt){
     var t = el("toast");
     t.textContent = txt;
@@ -291,18 +377,53 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     flashTimer = setTimeout(function(){ t.classList.remove("on"); }, 1900);
   }
 
-  function render(){
-    var need = S.level, p = Math.min(S.presses, need);
-    var pct = Math.round(p / need * 100);
+  /* ---------- отрисовка значка ---------- */
+  function badgeSVG(lv){
+    var id = "bg" + (++uidc);
+    var r = rankOf(lv), R = RANKS[r-1];
+    var teeth = "", n = 6 + (r - 1) * 2;
+    for(var i = 0; i < n; i++){
+      var a = Math.PI * 2 / n * i - Math.PI / 2;
+      var x1 = 50 + Math.cos(a) * 39, y1 = 50 + Math.sin(a) * 39;
+      var x2 = 50 + Math.cos(a) * 46, y2 = 50 + Math.sin(a) * 46;
+      teeth += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="url(#' + id + ')" stroke-width="1.6" stroke-linecap="round"/>';
+    }
+    var diamond = r >= 4 ? '<path d="M50 19 L65 50 L50 81 L35 50 Z" fill="url(#' + id + ')" opacity=".15" stroke="url(#' + id + ')" stroke-width=".8"/>' : "";
+    var scratch = r === 1 ? '<line x1="33" y1="61" x2="41" y2="73" stroke="rgba(255,255,255,.16)" stroke-width="1"/><line x1="59" y1="29" x2="66" y2="41" stroke="rgba(255,255,255,.13)" stroke-width="1"/>' : "";
+    var fs = lv >= 100 ? 19 : (lv >= 10 ? 22 : 25);
+    return '<svg viewBox="0 0 100 100" width="100%" height="100%" class="bsvg r' + r + '">' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="' + R.c1 + '"/><stop offset="1" stop-color="' + R.c2 + '"/>' +
+      '</linearGradient></defs>' +
+      '<circle cx="50" cy="50" r="47" fill="none" stroke="url(#' + id + ')" stroke-width="1" opacity=".4"/>' +
+      '<circle cx="50" cy="50" r="34" fill="rgba(4,7,9,.86)" stroke="url(#' + id + ')" stroke-width="2"/>' +
+      diamond + teeth + scratch +
+      '<text x="50" y="' + (lv >= 100 ? 50 : 49) + '" text-anchor="middle" font-family="monospace" font-size="' + fs + '" font-weight="700" fill="url(#' + id + ')">' + lv + '</text>' +
+      '<text x="50" y="66" text-anchor="middle" font-family="monospace" font-size="7" letter-spacing="1.2" fill="' + R.c1 + '" opacity=".75">LVL</text>' +
+      '</svg>';
+  }
 
-    el("avLvl").textContent  = pad(S.level);
-    el("lvlBig").textContent = "\u0423\u0420. " + pad(S.level);
-    el("rewVal").textContent = "+" + S.level + " \u20BD";
-    el("pText").textContent  = p + " / " + need;
-    el("pPct").textContent   = pct + "%";
-    el("fill").style.width   = pct + "%";
-    el("pend").textContent   = money(pending());
-    el("tot").textContent    = money(S.totalEarned);
+  function render(){
+    var lv = S.level;
+    var need = lv, p = Math.min(S.presses, need);
+    var pct = Math.round(p / need * 100);
+    var rank = rankOf(lv), R = RANKS[rank-1];
+
+    el("avLvl").textContent     = pad(lv);
+    el("lvlBig").textContent    = "\u0423\u0420. " + pad(lv);
+    el("titleMain").textContent = titleOf(lv);
+    el("rankMain").textContent  = "\u0420\u0410\u041D\u0413: " + R.n + " \u00B7 " + R.d;
+    el("badgeMain").innerHTML   = badgeSVG(lv);
+    el("rewVal").textContent    = "+" + lv + " \u20BD";
+    el("pText").textContent     = p + " / " + need;
+    el("pPct").textContent      = pct + "%";
+    el("fill").style.width      = pct + "%";
+    el("pend").textContent      = money(pending());
+    el("tot").textContent       = money(S.totalEarned);
+
+    el("nextLine").textContent = lv < MAX
+      ? "\u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439: \u0423\u0420. " + pad(lv+1) + " \u00B7 " + titleOf(lv+1) + " (+" + (lv+1) + " \u20BD)"
+      : "\u043C\u0430\u043A\u0441\u0438\u043C\u0443\u043C \u0434\u043E\u0441\u0442\u0438\u0433\u043D\u0443\u0442 \u00B7 \u0444\u0430\u0440\u043C\u0438\u043C 100 \u20BD";
 
     el("cPend").textContent  = money(pending());
     el("cToday").textContent = money(todaySum());
@@ -312,7 +433,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     var tb = el("tBody");
     var rows = S.entries.slice().reverse();
     if(!rows.length){
-      tb.innerHTML = '<tr><td colspan="3" class="empty">пока нет начислений</td></tr>';
+      tb.innerHTML = '<tr><td colspan="3" class="empty">\u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u043D\u0430\u0447\u0438\u0441\u043B\u0435\u043D\u0438\u0439</td></tr>';
     }else{
       tb.innerHTML = rows.map(function(e){
         return '<tr><td>\u0423\u0420. ' + pad(e.lv) + '</td>' +
@@ -330,8 +451,44 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
       b.textContent = pd > 0 ? "\u0417\u0410\u0411\u0420\u0410\u041B \u00B7 \u041E\u0427\u0418\u0421\u0422\u0418\u0422\u042C \u00B7 " + money(pd)
                              : "\u0417\u0410\u0411\u0420\u0410\u041B \u00B7 \u041E\u0427\u0418\u0421\u0422\u0418\u0422\u042C";
     }
+
+    if(!resetArmed){
+      var rb = el("btnReset");
+      rb.classList.remove("armed");
+      rb.textContent = "\u041F\u041E\u041B\u041D\u042B\u0419 \u0421\u0411\u0420\u041E\u0421 \u00B7 \u0414\u041E \u0423\u0420\u041E\u0412\u041D\u042F 1";
+    }
+
+    renderRankStrip(rank, R);
+    renderList();
   }
 
+  function renderRankStrip(rank, R){
+    el("rankBadge").innerHTML = badgeSVG(rank * 10);
+    el("rankName").textContent = "\u0420\u0410\u041D\u0413: " + R.n;
+    el("rankRange").textContent = "\u0423\u0420\u041E\u0412\u041D\u0418 " + pad((rank-1)*10+1) + "\u2013" + pad(rank*10) + " \u00B7 \u0417\u041D\u0410\u0427\u041E\u041A: " + R.d.toUpperCase();
+  }
+
+  var listBuilt = false;
+  function renderList(){
+    var box = el("lvList");
+    var sig = S.level;
+    if(listBuilt && box.getAttribute("data-sig") === String(sig)) return;
+    var html = "";
+    for(var i = 1; i <= MAX; i++){
+      var cls = i < S.level ? " done" : (i === S.level ? " now" : "");
+      var mark = i < S.level ? "\u2713 \u041F\u0420\u041E\u0419\u0414\u0415\u041D" : (i === S.level ? "\u25B6 \u0421\u0415\u0419\u0427\u0410\u0421" : "\u0417\u0410\u041A\u0420\u042B\u0422");
+      html += '<div class="lvrow' + cls + '" data-lv="' + i + '">' +
+        '<div class="bg">' + badgeSVG(i) + '</div>' +
+        '<div class="nm"><b>' + titleOf(i) + '</b><small>\u0423\u0420. ' + pad(i) + ' \u00B7 ' + RANKS[rankOf(i)-1].n + '</small></div>' +
+        '<div class="rw">+' + i + ' \u20BD</div>' +
+        '<div class="stt">' + mark + '</div></div>';
+    }
+    box.innerHTML = html;
+    box.setAttribute("data-sig", String(sig));
+    listBuilt = true;
+  }
+
+  /* ---------- нажатие ---------- */
   function press(){
     if(lock) return;
     lock = true;
@@ -340,7 +497,6 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     S.presses++;
 
     if(S.presses >= S.level){
-      /* уровень закрыт */
       var lv = S.level;
 
       el("fill").style.width = "100%";
@@ -349,20 +505,23 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
 
       S.entries.push({ lv: lv, sum: lv, t: Date.now(), paid: false });
       S.totalEarned = (Number(S.totalEarned) || 0) + lv;
-      S.level = lv + 1;
+      S.level = Math.min(MAX, lv + 1);
       S.presses = 0;
+      listBuilt = false;
       save();
 
-      el("pend").textContent = money(pending());
-      el("tot").textContent  = money(S.totalEarned);
+      el("pend").textContent  = money(pending());
+      el("tot").textContent   = money(S.totalEarned);
       el("avLvl").textContent = pad(S.level);
       el("lvlBig").textContent = "\u0423\u0420. " + pad(S.level);
+      el("titleMain").textContent = titleOf(S.level);
+      el("reward" + "");
       el("rewVal").textContent = "+" + S.level + " \u20BD";
 
       var btn = el("btn");
       btn.classList.add("paid");
       btn.querySelector(".act-main").textContent = "+" + lv + " \u20BD";
-      btn.querySelector(".act-sub").textContent  = "\u0443\u0440\u043E\u0432\u0435\u043D\u044C " + pad(lv) + " \u0437\u0430\u043A\u0440\u044B\u0442";
+      btn.querySelector(".act-sub").textContent  = "\u0443\u0440\u043E\u0432\u0435\u043D\u044C " + pad(lv) + " \u00B7 " + titleOf(lv);
 
       buzz([20,50,20,50,30]);
 
@@ -382,6 +541,7 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     }
   }
 
+  /* ---------- очистка денег ---------- */
   function armClear(){
     if(pending() <= 0) return;
     if(clearArmed){ doClear(); return; }
@@ -391,12 +551,8 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     b.textContent = "\u041F\u041E\u0414\u0422\u0412\u0415\u0420\u0414\u0418: " + money(pending());
     buzz(12);
     clearTimeout(armTimer);
-    armTimer = setTimeout(function(){
-      clearArmed = false;
-      render();
-    }, 4500);
+    armTimer = setTimeout(function(){ clearArmed = false; render(); }, 4500);
   }
-
   function doClear(){
     var s = pending();
     if(s <= 0) return;
@@ -410,30 +566,51 @@ td.empty{text-align:center;color:var(--mute);padding:20px 10px;letter-spacing:.1
     flash("\u041E\u0427\u0418\u0429\u0415\u041D\u041E \u00B7 " + money(s));
   }
 
-  function resetAll(){
-    if(!confirm("\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C \u0432\u0435\u0441\u044C \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441: \u0443\u0440\u043E\u0432\u0435\u043D\u044C, \u043D\u0430\u0436\u0430\u0442\u0438\u044F \u0438 \u0432\u0441\u0435 \u043D\u0430\u0447\u0438\u0441\u043B\u0435\u043D\u0438\u044F?")) return;
+  /* ---------- полный сброс до 1 уровня ---------- */
+  function armReset(){
+    if(resetArmed){ doReset(); return; }
+    resetArmed = true;
+    var b = el("btnReset");
+    b.classList.add("armed");
+    b.textContent = "\u0422\u041E\u0427\u041D\u041E? \u0421\u0411\u0420\u041E\u0421\u0418\u0422\u042C \u0412\u0421\u0401 \u0414\u041E \u0423\u0420. 1";
+    buzz([14,30,14]);
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function(){ resetArmed = false; render(); }, 4500);
+  }
+  function doReset(){
     S = { level:1, presses:0, entries:[], totalEarned:0, withdrawn:0 };
-    clearArmed = false;
+    clearArmed = false; resetArmed = false;
+    clearTimeout(resetTimer);
+    listBuilt = false;
     save();
     render();
-    flash("\u041F\u0420\u041E\u0413\u0420\u0415\u0421\u0421 \u0421\u0411\u0420\u041E\u0428\u0415\u041D");
+    buzz([30,60,30,60,40]);
+    flash("\u041F\u041E\u041B\u041D\u042B\u0419 \u0421\u0411\u0420\u041E\u0421 \u00B7 \u0423\u0420. 1");
   }
 
-  /* подписки */
+  /* ---------- события ---------- */
   el("btn").addEventListener("click", press);
   el("btnClear").addEventListener("click", armClear);
-  el("btnReset").addEventListener("click", resetAll);
+  el("btnReset").addEventListener("click", armReset);
 
   var tabs = document.querySelectorAll(".tab");
+  var screens = { main:"scrMain", stats:"scrStats", levels:"scrLevels" };
   for(var i = 0; i < tabs.length; i++){
     tabs[i].addEventListener("click", function(){
       for(var k = 0; k < tabs.length; k++) tabs[k].classList.remove("on");
       this.classList.add("on");
-      var target = this.getAttribute("data-scr") === "stats" ? "scrStats" : "scrMain";
+      var key = this.getAttribute("data-scr");
       el("scrMain").classList.remove("on");
       el("scrStats").classList.remove("on");
-      el(target).classList.add("on");
+      el("scrLevels").classList.remove("on");
+      el(screens[key]).classList.add("on");
       render();
+      if(key === "levels"){
+        setTimeout(function(){
+          var now = document.querySelector(".lvrow.now");
+          if(now && now.scrollIntoView) now.scrollIntoView({block:"center", behavior:"smooth"});
+        }, 120);
+      }
     });
   }
 
