@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f1a">
+<title>Дашборд · Ульяновск</title>
+<style>
+  :root{
+    --bg:#070a12;
+    --card:rgba(255,255,255,.055);
+    --stroke:rgba(255,255,255,.12);
+    --text:#eef2ff;
+    --muted:#8b93a7;
+    --accent:#7c5cff;
+    --accent2:#22d3ee;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,"SF Pro Display",system-ui,"Segoe UI",Roboto,sans-serif;
+    padding:22px 16px 44px;
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:-30%;
+    background:
+      radial-gradient(38% 30% at 20% 12%,rgba(124,92,255,.55),transparent 70%),
+      radial-gradient(34% 28% at 82% 8%,rgba(34,211,238,.38),transparent 70%),
+      radial-gradient(46% 36% at 50% 100%,rgba(236,72,153,.28),transparent 72%);
+    filter:blur(28px);
+    animation:drift 22s ease-in-out infinite alternate;
+    z-index:0;
+  }
+  @keyframes drift{
+    0%{transform:translate3d(-3%,-2%,0) scale(1)}
+    100%{transform:translate3d(4%,3%,0) scale(1.12)}
+  }
+  .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto}
+
+  header{text-align:center;margin-bottom:20px}
+  .kicker{
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px;
+  }
+  h1{
+    margin:0;font-size:clamp(26px,8vw,38px);font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(100deg,#fff,#b9a6ff 35%,#6ee7f9 70%,#fff);
+    background-size:220% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 7s linear infinite;
+  }
+  @keyframes shine{to{background-position:-220% 0}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--stroke);
+    border-radius:22px;
+    padding:18px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 18px 40px -24px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.07);
+    margin-bottom:14px;
+  }
+  .label{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;
+  }
+
+  /* часы */
+  .clock-row{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+  #clock{font-size:clamp(40px,13vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  #secs{color:var(--accent2);font-size:.5em;font-weight:600}
+  #date{font-size:13px;color:var(--muted);align-self:center;text-align:right}
+
+  .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:14px}
+  .bar > i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s ease}
+  .bar-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:7px}
+
+  /* погода */
+  .now{display:flex;align-items:center;gap:16px}
+  #w-icon{font-size:52px;line-height:1}
+  #w-temp{font-size:clamp(38px,11vw,50px);font-weight:800;letter-spacing:-.03em;line-height:1}
+  #w-desc{font-size:13px;color:var(--muted);margin-top:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{
+    font-size:12px;color:#cfd6e6;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.09);border-radius:99px;padding:6px 11px;
+  }
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
+  .day{
+    text-align:center;padding:9px 2px;border-radius:14px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  }
+  .day b{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+  .day span{display:block;font-size:19px;margin:5px 0 3px}
+  .day em{display:block;font-size:10px;font-style:normal;color:#cfd6e6;font-variant-numeric:tabular-nums}
+
+  /* валюты */
+  .rates{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .rate{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+    border-radius:16px;padding:12px 13px;
+  }
+  .rate .ccy{font-size:11px;letter-spacing:.14em;color:var(--muted)}
+  .rate .val{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+  .rate .dyn{font-size:11px;margin-top:2px;color:var(--muted)}
+  .up{color:#4ade80}.down{color:#f87171}
+
+  .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;line-height:1.7}
+  .foot a{color:#a99cff;text-decoration:none}
+  .err{font-size:12px;color:#fca5a5;margin-top:10px;display:none}
+  .skel{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Ульяновск · живой дашборд</div>
+    <h1>Сейчас</h1>
+  </header>
+
+  <section class="card">
+    <div class="clock-row">
+      <div>
+        <div class="label">Время</div>
+        <div id="clock">--:--<span id="secs">:--</span></div>
+      </div>
+      <div id="date">—</div>
+    </div>
+    <div class="bar"><i id="daybar"></i></div>
+    <div class="bar-meta"><span id="daypct">0% дня</span><span>осталось <b id="dayleft">—</b></span></div>
+  </section>
+
+  <section class="card">
+    <div class="label">Погода на улице</div>
+    <div class="now">
+      <div id="w-icon">🌤️</div>
+      <div>
+        <div id="w-temp">—°</div>
+        <div id="w-desc">загружаю…</div>
+      </div>
+    </div>
+    <div class="chips" id="w-chips"></div>
+    <div class="week" id="w-week"></div>
+    <div class="err" id="w-err">Погоду не удалось загрузить — проверь интернет.</div>
+  </section>
+
+  <section class="card">
+    <div class="label">Курсы ЦБ РФ</div>
+    <div class="rates" id="rates"><div class="skel">загружаю…</div></div>
+    <div class="err" id="r-err">Курсы не загрузились — попробуй обновить страницу.</div>
+  </section>
+
+  <div class="foot">
+    Данные: Open-Meteo и ЦБ РФ · <a href="nagibatorz.html">← на страницу NAGIBATORZ</a><br>
+    Всё считается прямо в браузере, ничего не хранится.
+  </div>
+</div>
+
+<script>
+/* ---------- часы ---------- */
+const WD = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const MON = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const p2 = n => String(n).padStart(2,'0');
+
+function tick(){
+  const d = new Date();
+  document.getElementById('clock').innerHTML = p2(d.getHours())+':'+p2(d.getMinutes())+'<span id="secs">:'+p2(d.getSeconds())+'</span>';
+  document.getElementById('date').textContent = WD[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()];
+
+  const total = 86400000;
+  const passed = d.getHours()*3600000 + d.getMinutes()*60000 + d.getSeconds()*1000;
+  const pct = passed/total*100;
+  document.getElementById('daybar').style.width = pct.toFixed(2)+'%';
+  document.getElementById('daypct').textContent = pct.toFixed(0)+'% дня прошло';
+
+  let left = total - passed;
+  const h = Math.floor(left/3600000);
+  const m = Math.floor(left%3600000/60000);
+  document.getElementById('dayleft').textContent = h+' ч '+p2(m)+' мин';
+}
+tick();
+setInterval(tick,1000);
+
+/* ---------- погода ---------- */
+const WMO = {
+  0:['☀️','ясно'],1:['🌤️','почти ясно'],2:['⛅','переменная облачность'],3:['☁️','облачно'],
+  45:['🌫️','туман'],48:['🌫️','изморозь'],
+  51:['🌦️','слабая морось'],53:['🌦️','морось'],55:['🌧️','сильная морось'],
+  56:['🌧️','ледяная морось'],57:['🌧️','ледяная морось'],
+  61:['🌧️','небольшой дождь'],63:['🌧️','дождь'],65:['🌧️','сильный дождь'],
+  66:['🌧️','ледяной дождь'],67:['🌧️','ледяной дождь'],
+  71:['🌨️','небольшой снег'],73:['🌨️','снег'],75:['❄️','сильный снег'],77:['❄️','снежная крупа'],
+  80:['🌦️','ливни'],81:['🌧️','ливни'],82:['⛈️','сильные ливни'],
+  85:['🌨️','снегопад'],86:['❄️','сильный снегопад'],
+  95:['⛈️','гроза'],96:['⛈️','гроза с градом'],99:['⛈️','гроза с градом']
+};
+const WDAY = ['вс','пн','вт','ср','чт','пт','сб'];
+
+async function loadWeather(){
+  const url = 'https://api.open-meteo.com/v1/forecast'
+    + '?latitude=54.3176&longitude=48.4022'
+    + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,pressure_msl'
+    + '&daily=temperature_2m_max,temperature_2m_min,weather_code'
+    + '&timezone=Europe%2FSamara&forecast_days=7';
+  try{
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('http '+r.status);
+    const j = await r.json();
+    const c = j.current, d = j.daily;
+
+    const meta = WMO[c.weather_code] || ['🌡️','погода'];
+    document.getElementById('w-icon').textContent = meta[0];
+    document.getElementById('w-temp').textContent = Math.round(c.temperature_2m)+'°';
+    document.getElementById('w-desc').textContent = meta[1][0].toUpperCase()+meta[1].slice(1);
+
+    document.getElementById('w-chips').innerHTML = [
+      'ощущается '+Math.round(c.apparent_temperature)+'°',
+      'ветер '+Math.round(c.wind_speed_10m)+' км/ч',
+      'влажность '+Math.round(c.relative_humidity_2m)+'%',
+      Math.round(c.pressure_msl*0.75006)+' мм рт. ст.'
+    ].map(t=>'<div class="chip">'+t+'</div>').join('');
+
+    const week = document.getElementById('w-week');
+    week.innerHTML = '';
+    for(let i=0;i<7;i++){
+      const dt = new Date(d.time[i]+'T12:00:00');
+      const m = WMO[d.weather_code[i]] || ['🌡️',''];
+      week.insertAdjacentHTML('beforeend',
+        '<div class="day"><b>'+WDAY[dt.getDay()]+'</b><span>'+m[0]+'</span>'
+        +'<em>'+Math.round(d.temperature_2m_max[i])+'° / '+Math.round(d.temperature_2m_min[i])+'°</em></div>');
+    }
+  }catch(e){
+    document.getElementById('w-desc').textContent = 'нет данных';
+    document.getElementById('w-err').style.display = 'block';
+  }
+}
+loadWeather();
+
+/* ---------- курсы ЦБ ---------- */
+async function loadRates(){
+  const box = document.getElementById('rates');
+  try{
+    const r = await fetch('https://www.cbr-xml-daily.ru/daily_json.js', {cache:'no-store'});
+    if(!r.ok) throw new Error('http '+r.status);
+    const j = await r.json();
+    const pick = [
+      ['USD','Доллар'],
+      ['EUR','Евро'],
+      ['CNY','Юань'],
+      ['KZT','Тенге']
+    ];
+    box.innerHTML = pick.map(([code,name])=>{
+      const v = j.Valute[code];
+      if(!v) return '';
+      const nominal = v.Nominal || 1;
+      const value = v.Value / nominal;
+      const prev = v.Previous / nominal;
+      const diff = value - prev;
+      const cls = diff > 0.0001 ? 'up' : (diff < -0.0001 ? 'down' : '');
+      const arrow = diff > 0.0001 ? '▲' : (diff < -0.0001 ? '▼' : '＝');
+      const sign = diff > 0 ? '+' : '';
+      return '<div class="rate"><div class="ccy">'+name+' · '+code+'</div>'
+        +'<div class="val">'+value.toFixed(2)+' ₽</div>'
+        +'<div class="dyn '+cls+'">'+arrow+' '+sign+diff.toFixed(2)+' ₽</div></div>';
+    }).join('');
+  }catch(e){
+    box.innerHTML = '';
+    document.getElementById('r-err').style.display = 'block';
+  }
+}
+loadRates();
+
+/* автообновление данных раз в 10 минут */
+setInterval(loadWeather, 600000);
+setInterval(loadRates, 600000);
+</script>
+</body>
+</html>
