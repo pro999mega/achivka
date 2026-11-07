@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAGIBATORZ</title>
+<style>
+  :root {
+    --bg: #05060a;
+    --accent: #7c5cff;
+    --accent2: #00e5ff;
+    --text: #e9e9f2;
+    --muted: #8b8ba3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    position: relative;
+  }
+  /* Анимированное свечение на фоне */
+  .glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow.a {
+    width: 420px; height: 420px;
+    background: var(--accent);
+    top: -120px; left: -100px;
+    animation: float1 14s ease-in-out infinite;
+  }
+  .glow.b {
+    width: 380px; height: 380px;
+    background: var(--accent2);
+    bottom: -140px; right: -110px;
+    animation: float2 17s ease-in-out infinite;
+  }
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(80px, 60px) scale(1.15); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-70px, -50px) scale(1.2); }
+  }
+  .content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+    text-align: center;
+  }
+  .logo {
+    font-size: clamp(36px, 11vw, 76px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    margin: 0 0 8px;
+    background: linear-gradient(100deg, var(--accent), var(--accent2), var(--accent));
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 250% 50%; }
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+  .cards { display: grid; gap: 16px; margin-bottom: 28px; }
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 22px 20px;
+    backdrop-filter: blur(10px);
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(124,92,255,0.5);
+  }
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .big {
+    font-size: 34px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #fff, #b9b9ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .timer { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .unit { min-width: 62px; }
+  .unit .num { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .unit .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .bar {
+    height: 8px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+    margin-top: 14px;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .8s ease;
+  }
+  footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+    color: #4b4b60;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+  <div class="glow a"></div>
+  <div class="glow b"></div>
+
+  <div class="content">
+    <h1 class="logo">NAGIBATORZ</h1>
+    <p class="tagline">vertical in progress</p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>До 18 лет</h3>
+        <div class="timer" id="timer">
+          <div class="unit"><div class="num" id="d">—</div><div class="lbl">дней</div></div>
+          <div class="unit"><div class="num" id="h">—</div><div class="lbl">часов</div></div>
+          <div class="unit"><div class="num" id="m">—</div><div class="lbl">минут</div></div>
+          <div class="unit"><div class="num" id="s">—</div><div class="lbl">секунд</div></div>
+        </div>
+        <div class="sub" id="bd"></div>
+      </div>
+
+      <div class="card">
+        <h3>Выход на учёбу</h3>
+        <div class="big" id="depart">07:30 – 08:00</div>
+        <div class="sub">Шевченко 99 → УлГТУ</div>
+      </div>
+
+      <div class="card">
+        <h3>Сейчас</h3>
+        <div class="big" id="clock">--:--:--</div>
+        <div class="sub" id="today"></div>
+        <div class="bar"><i id="progress"></i></div>
+        <div class="sub" id="progressLabel">Прогресс дня</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Honer AI · сделано на автомате</footer>
+
+<script>
+  // День рождения: 31 мая 2009 → 18 лет
+  const BIRTHDAY = new Date(2009, 4, 31, 0, 0, 0);
+  const TARGET = new Date(2009 + 18, 4, 31, 0, 0, 0);
+
+  const pad = n => String(n).padStart(2, '0');
+
+  function tick() {
+    const now = new Date();
+
+    // Обратный отсчёт до 18
+    let diff = TARGET - now;
+    if (diff < 0) diff = 0;
+    const totalSec = Math.floor(diff / 1000);
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+
+    document.getElementById('d').textContent = days;
+    document.getElementById('h').textContent = pad(hours);
+    document.getElementById('m').textContent = pad(mins);
+    document.getElementById('s').textContent = pad(secs);
+    document.getElementById('bd').textContent = '31 мая ' + TARGET.getFullYear() + ' · будет 18';
+
+    // Часы
+    document.getElementById('clock').textContent =
+      pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+    const daysRu = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+    const monthsRu = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    document.getElementById('today').textContent =
+      daysRu[now.getDay()] + ', ' + now.getDate() + ' ' + monthsRu[now.getMonth()] + ' ' + now.getFullYear();
+
+    // Прогресс дня
+    const dayProgress = ((now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400) * 100;
+    document.getElementById('progress').style.width = dayProgress.toFixed(1) + '%';
+    document.getElementById('progressLabel').textContent = 'Прошло ' + dayProgress.toFixed(1) + '% дня';
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
